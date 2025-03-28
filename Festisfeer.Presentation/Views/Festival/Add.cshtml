@@ -1,0 +1,44 @@
+﻿@model Festisfeer.Domain.Models.Festival
+
+<h2>Voeg een festival toe</h2>
+
+<form method="post" enctype="multipart/form-data">
+    <div>
+        <label for="Name">Festival Naam</label>
+        <input type="text" id="Name" name="Name" value="@Model.Name" required />
+    </div>
+
+    <div>
+        <label for="Location">Locatie</label>
+        <input type="text" id="Location" name="Location" value="@Model.Location" required />
+    </div>
+
+    <div>
+        <label for="StartDate">Startdatum</label>
+        <input type="date" id="StartDate" name="StartDate" value="@Model.StartDate.ToString("yyyy-MM-dd")" required />
+    </div>
+
+    <div>
+        <label for="EndDate">Einddatum</label>
+        <input type="date" id="EndDate" name="EndDate" value="@Model.EndDate.ToString("yyyy-MM-dd")" required />
+    </div>
+
+    <div>
+        <label for="Genre">Genre</label>
+        <input type="text" id="Genre" name="Genre" value="@Model.Genre" required />
+    </div>
+
+    <div>
+        <label for="TicketPrice">Ticketprijs</label>
+        <input type="number" id="TicketPrice" name="TicketPrice" value="@Model.TicketPrice" required />
+    </div>
+
+    <div>
+        <label for="FestivalImg">Festival Afbeelding</label>
+        <input type="file" id="FestivalImg" name="festivalImg" />
+    </div>
+
+    <div>
+        <button type="submit">Toevoegen</button>
+    </div>
+</form>

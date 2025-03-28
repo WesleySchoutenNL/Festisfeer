@@ -1,0 +1,17 @@
+﻿@model List<Festisfeer.Domain.Models.Festival>
+
+<h2>Festivals</h2>
+
+<div style="display: flex; gap: 20px; flex-wrap: wrap;">
+    @foreach (var festival in Model)
+    {
+        <div style="border: 1px solid #ddd; padding: 10px; width: 300px;">
+            <img src="@festival.FestivalImg" alt="Festival afbeelding" width="100%" />
+            <h3>@festival.Name</h3>
+            <p>Locatie: @festival.Location</p>
+            <p>Datum: @festival.StartDate.ToShortDateString() - @festival.EndDate.ToShortDateString()</p>
+            <p>Genre: @festival.Genre</p>
+            <p>Ticketprijs: €@festival.TicketPrice</p>
+        </div>
+    }
+</div>
