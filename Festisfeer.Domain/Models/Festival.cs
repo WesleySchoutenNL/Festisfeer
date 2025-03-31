@@ -11,8 +11,8 @@ namespace Festisfeer.Domain.Models
         public int Id { get; set; }
         public string? Name { get; set; }
         public string? Location { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public DateTime StartDateTime { get; set; }
+        public DateTime EndDateTime { get; set; }
         public string? Genre { get; set; }
         public int TicketPrice { get; set; }
         public string? FestivalImg { get; set; }  // Dit is de URL van de afbeelding

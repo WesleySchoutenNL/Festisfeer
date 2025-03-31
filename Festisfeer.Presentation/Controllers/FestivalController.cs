@@ -3,6 +3,7 @@ using Festisfeer.Data.Repositories;
 using Festisfeer.Domain.Models;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
+using System.Linq;
 
 namespace Festisfeer.Presentation.Controllers
 {
@@ -55,6 +56,22 @@ namespace Festisfeer.Presentation.Controllers
             }
 
             return View(festival); // Als er een fout is, toon het formulier opnieuw
+        }
+
+        // Actie om de details van een specifiek festival te tonen
+        public IActionResult Details(int id)
+        {
+            // Haal het festival op basis van id
+            var festival = _festivalRepository.GetFestivals().FirstOrDefault(f => f.Id == id);
+
+            // Als het festival niet gevonden is, geef een 404 pagina terug
+            if (festival == null)
+            {
+                return NotFound();
+            }
+
+            // Geef het festival door naar de view voor weergave
+            return View(festival);
         }
     }
 }

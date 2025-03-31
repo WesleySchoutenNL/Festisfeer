@@ -1,17 +1,26 @@
 ﻿@model List<Festisfeer.Domain.Models.Festival>
 
-<h2>Festivals</h2>
+<h2 class="text-center mb-4">Festivals</h2>
 
-<div style="display: flex; gap: 20px; flex-wrap: wrap;">
-    @foreach (var festival in Model)
-    {
-        <div style="border: 1px solid #ddd; padding: 10px; width: 300px;">
-            <img src="@festival.FestivalImg" alt="Festival afbeelding" width="100%" />
-            <h3>@festival.Name</h3>
-            <p>Locatie: @festival.Location</p>
-            <p>Datum: @festival.StartDate.ToShortDateString() - @festival.EndDate.ToShortDateString()</p>
-            <p>Genre: @festival.Genre</p>
-            <p>Ticketprijs: €@festival.TicketPrice</p>
-        </div>
-    }
+<div class="container">
+    <div class="row g-4">
+        @foreach (var festival in Model)
+        {
+            <div class="col-md-4 col-sm-6">
+                <div class="card shadow-sm border-0">
+                    <!-- Maak de afbeelding klikbaar en link naar de Details-pagina -->
+                    <a href="@Url.Action("Details", "Festival", new { id = festival.Id })">
+                        <img src="@festival.FestivalImg" class="card-img-top" alt="Festival afbeelding" style="height: 200px; object-fit: cover;">
+                    </a>
+                    <div class="card-body">
+                        <h5 class="card-title">@festival.Name</h5>
+                        <p class="card-text"><strong>Locatie:</strong> @festival.Location</p>
+                        <p class="card-text"><strong>Datum:</strong> @festival.StartDateTime.ToString("yyyy-MM-dd HH:mm") - @festival.EndDateTime.ToString("yyyy-MM-dd HH:mm")</p>
+                        <p class="card-text"><strong>Genre:</strong> @festival.Genre</p>
+                        <p class="card-text"><strong>Ticketprijs:</strong> €@festival.TicketPrice</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 </div>

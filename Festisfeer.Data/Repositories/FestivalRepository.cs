@@ -34,8 +34,8 @@ namespace Festisfeer.Data.Repositories
                                 Id = reader.GetInt32("id"),
                                 Name = reader.GetString("name"),
                                 Location = reader.GetString("location"),
-                                StartDate = reader.GetDateTime("start_date"),
-                                EndDate = reader.GetDateTime("end_date"),
+                                StartDateTime = reader.GetDateTime("start_datetime"),
+                                EndDateTime = reader.GetDateTime("end_datetime"),
                                 Genre = reader.GetString("genre"),
                                 TicketPrice = reader.GetInt32("ticket_price"),
                                 FestivalImg = reader.GetString("festival_img")
@@ -54,15 +54,15 @@ namespace Festisfeer.Data.Repositories
             using (MySqlConnection conn = new MySqlConnection(_connectionString))
             {
                 conn.Open();
-                string query = "INSERT INTO festival (name, location, start_date, end_date, genre, ticket_price, festival_img) " +
-                               "VALUES (@name, @location, @start_date, @end_date, @genre, @ticket_price, @festival_img)";
+                string query = "INSERT INTO festival (name, location, start_datetime, end_datetime, genre, ticket_price, festival_img) " +
+                               "VALUES (@name, @location, @start_datetime, @end_datetime, @genre, @ticket_price, @festival_img)";
 
                 using (MySqlCommand cmd = new MySqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@name", festival.Name);
                     cmd.Parameters.AddWithValue("@location", festival.Location);
-                    cmd.Parameters.AddWithValue("@start_date", festival.StartDate);
-                    cmd.Parameters.AddWithValue("@end_date", festival.EndDate);
+                    cmd.Parameters.AddWithValue("@start_datetime", festival.StartDateTime);
+                    cmd.Parameters.AddWithValue("@end_datetime", festival.EndDateTime);
                     cmd.Parameters.AddWithValue("@genre", festival.Genre);
                     cmd.Parameters.AddWithValue("@ticket_price", festival.TicketPrice);
                     cmd.Parameters.AddWithValue("@festival_img", festival.FestivalImg);
