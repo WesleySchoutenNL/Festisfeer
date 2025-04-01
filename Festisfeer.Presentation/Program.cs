@@ -5,6 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Voeg services toe aan de container
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<FestivalRepository>();
+builder.Services.AddScoped<UserRepository>(); // Voeg deze regel toe om UserRepository te registreren
 
 var app = builder.Build();
 
