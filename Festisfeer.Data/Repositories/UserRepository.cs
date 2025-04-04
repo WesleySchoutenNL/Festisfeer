@@ -18,6 +18,26 @@ namespace Festisfeer.Data.Repositories
         //Registreer een nieuwe gebruiker
         public void RegisterUser(User user)
         {
+            // Controleer of de gebruiker al bestaat op basis van het e-mailadres
+            using (MySqlConnection conn = new MySqlConnection(_connectionString))
+            {
+                conn.Open();
+                string checkQuery = "SELECT COUNT(*) FROM users WHERE email = @Email";
+
+                using (MySqlCommand cmd = new MySqlCommand(checkQuery, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Email", user.Email);
+                    int count = Convert.ToInt32(cmd.ExecuteScalar());
+
+                    if (count > 0)
+                    {
+                        // Er bestaat al een gebruiker met dit e-mailadres
+                        throw new Exception("Dit e-mailadres is al geregistreerd.");
+                    }
+                }
+            }
+
+            // Als de gebruiker nog niet bestaat, voeg deze toe
             string hashedPassword = BCrypt.Net.BCrypt.HashPassword(user.Password);
 
             using (MySqlConnection conn = new MySqlConnection(_connectionString))

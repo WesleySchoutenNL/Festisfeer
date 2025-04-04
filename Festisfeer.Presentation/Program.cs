@@ -5,7 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Voeg services toe aan de container
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<FestivalRepository>();
-builder.Services.AddScoped<UserRepository>(); // Voeg deze regel toe om UserRepository te registreren
+builder.Services.AddScoped<UserRepository>(); 
 
 var app = builder.Build();
 
@@ -21,14 +21,14 @@ else
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles(); // Voeg dit toe om statische bestanden zoals afbeeldingen te serveren
+app.UseStaticFiles(); 
 
-// De volgorde van de middleware is belangrijk
-app.UseRouting(); // Routing middleware toevoegen vóór UseEndpoints
 
-app.UseAuthorization(); // Als je autorisatie gebruikt
+app.UseRouting();
 
-// Configureer de eindpunten voor controllers en routes
+app.UseAuthorization();
+
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

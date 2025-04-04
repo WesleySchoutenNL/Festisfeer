@@ -37,12 +37,13 @@ namespace Festisfeer.Presentation.Controllers
         [HttpPost]
         public IActionResult Login(LoginViewModel model)
         {
+            //Controleren of alles juist is ingevuld 
             if (ModelState.IsValid)
             {
                 var user = _userRepository.LoginUser(model.Email, model.Password);
                 if (user != null)
                 {
-                    // Hier kun je een sessie of cookie instellen voor ingelogde gebruikers
+                    //Cookies instellen
                     return RedirectToAction("Index", "Home");
                 }
                 ModelState.AddModelError(string.Empty, "Ongeldige inloggegevens.");
@@ -50,12 +51,14 @@ namespace Festisfeer.Presentation.Controllers
             return View(model);
         }
 
+        //Register pagina tonen
         [HttpGet]
         public IActionResult Register()
         {
             return View();
         }
 
+        //Login pagina tonen
         [HttpGet]
         public IActionResult Login()
         {

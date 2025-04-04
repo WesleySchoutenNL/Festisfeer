@@ -12,66 +12,63 @@ namespace Festisfeer.Presentation.Controllers
         private readonly FestivalRepository _festivalRepository;
         private readonly IWebHostEnvironment _hostEnvironment;
 
+        // Constructor: zorgt dat we toegang hebben tot de database en de serveromgeving
         public FestivalController(FestivalRepository festivalRepository, IWebHostEnvironment hostEnvironment)
         {
             _festivalRepository = festivalRepository;
             _hostEnvironment = hostEnvironment;
         }
 
-        // Actie om festivals weer te geven
+        // Laat alle festivals zien op de homepage
         public IActionResult Index()
         {
-            var festivals = _festivalRepository.GetFestivals(); // Haal alle festivals op
-            return View(festivals); // Geef de lijst van festivals door naar de view
+            var festivals = _festivalRepository.GetFestivals(); // Haalt alle festivals uit de database
+            return View(festivals); // Stuurt ze door naar de festival pagina
         }
 
-        // Actie om het formulier voor het toevoegen van een festival te tonen
+        //Formulier laten zien om nieuwe festivals toe te voegen
         public IActionResult Add()
         {
-            // Geef een leeg Festival object door naar de view
-            return View(new Festival());  // Dit zorgt ervoor dat het model niet null is
+            return View(new Festival()); // Stuurt een leeg festivalmodel naar de pagina
         }
 
-        // Actie om het festival toe te voegen (POST)
+        //Formulier verwerken vooor een nieuw festival
         [HttpPost]
         public IActionResult Add(Festival festival, Microsoft.AspNetCore.Http.IFormFile festivalImg)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid) 
             {
                 if (festivalImg != null)
                 {
-                    // Opslaan van het bestand
+                    // Slaat de afbeelding op in de map wwwroot/images
                     var filePath = Path.Combine(_hostEnvironment.WebRootPath, "images", festivalImg.FileName);
                     using (var fileStream = new FileStream(filePath, FileMode.Create))
                     {
-                        festivalImg.CopyTo(fileStream);
+                        festivalImg.CopyTo(fileStream); // Kopieert de afbeelding naar de server
                     }
 
-                    // Zet de URL van het bestand in het model
+                    // Zet de link naar de afbeelding in het model
                     festival.FestivalImg = "/images/" + festivalImg.FileName;
                 }
 
-                _festivalRepository.AddFestival(festival);  // Voeg festival toe aan de database
-                return RedirectToAction("Index"); // Terug naar de lijst van festivals
+                _festivalRepository.AddFestival(festival); // Slaat het festival op in de database
+                return RedirectToAction("Index"); // Gaat terug naar de hoofdpagina
             }
 
-            return View(festival); // Als er een fout is, toon het formulier opnieuw
+            return View(festival); // Als er iets mis is, laat het formulier opnieuw zien
         }
 
-        // Actie om de details van een specifiek festival te tonen
+        // Laat details van één specifiek festival zien voor op de detail pagina
         public IActionResult Details(int id)
         {
-            // Haal het festival op basis van id
-            var festival = _festivalRepository.GetFestivals().FirstOrDefault(f => f.Id == id);
+            var festival = _festivalRepository.GetFestivals().FirstOrDefault(f => f.Id == id); // Zoek het festival met de juiste ID
 
-            // Als het festival niet gevonden is, geef een 404 pagina terug
             if (festival == null)
             {
-                return NotFound();
+                return NotFound(); // Als het festival niet bestaat, geef een foutmelding (404)
             }
 
-            // Geef het festival door naar de view voor weergave
-            return View(festival);
+            return View(festival); // Stuur het gevonden festival naar de detailpagina
         }
     }
 }

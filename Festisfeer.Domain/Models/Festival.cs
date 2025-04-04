@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Festisfeer.Domain.Models
 {
+    //Class voor festivals
     public class Festival
     {
         public int Id { get; set; }

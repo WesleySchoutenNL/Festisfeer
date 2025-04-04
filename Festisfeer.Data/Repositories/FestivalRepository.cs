@@ -14,7 +14,7 @@ namespace Festisfeer.Data.Repositories
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
-        // ✅ Haal alle festivals op
+        //Festivals uit de database op halen om te tonen
         public List<Festival> GetFestivals()
         {
             List<Festival> festivals = new List<Festival>();
@@ -48,7 +48,7 @@ namespace Festisfeer.Data.Repositories
             return festivals;
         }
 
-        // ✅ Voeg een nieuw festival toe
+        //Festival toevoegen aan de database 
         public void AddFestival(Festival festival)
         {
             using (MySqlConnection conn = new MySqlConnection(_connectionString))
