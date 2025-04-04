@@ -2,10 +2,11 @@
 using Festisfeer.Domain.Models;
 using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
+using Festisfeer.Domain.Interfaces;
 
 namespace Festisfeer.Data.Repositories
 {
-    public class FestivalRepository
+    public class FestivalRepository : IFestivalRepository
     {
         private readonly string _connectionString;
 
@@ -14,7 +15,7 @@ namespace Festisfeer.Data.Repositories
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
-        //Festivals uit de database op halen om te tonen
+        // Haalt alle festivals op uit de database
         public List<Festival> GetFestivals()
         {
             List<Festival> festivals = new List<Festival>();
@@ -48,7 +49,43 @@ namespace Festisfeer.Data.Repositories
             return festivals;
         }
 
-        //Festival toevoegen aan de database 
+        // Haalt een specifiek festival op via ID
+        public Festival GetFestivalById(int id)
+        {
+            Festival festival = null;
+
+            using (MySqlConnection conn = new MySqlConnection(_connectionString))
+            {
+                conn.Open();
+                string query = "SELECT * FROM festival WHERE id = @id";
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", id);
+
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            festival = new Festival
+                            {
+                                Id = reader.GetInt32("id"),
+                                Name = reader.GetString("name"),
+                                Location = reader.GetString("location"),
+                                StartDateTime = reader.GetDateTime("start_datetime"),
+                                EndDateTime = reader.GetDateTime("end_datetime"),
+                                Genre = reader.GetString("genre"),
+                                TicketPrice = reader.GetInt32("ticket_price"),
+                                FestivalImg = reader.GetString("festival_img")
+                            };
+                        }
+                    }
+                }
+            }
+
+            return festival;
+        }
+
+        // Festival toevoegen aan de database
         public void AddFestival(Festival festival)
         {
             using (MySqlConnection conn = new MySqlConnection(_connectionString))

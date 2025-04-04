@@ -1,11 +1,14 @@
 using Festisfeer.Data.Repositories;
+using Festisfeer.Domain.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Voeg services toe aan de container
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<FestivalRepository>();
-builder.Services.AddScoped<UserRepository>(); 
+builder.Services.AddScoped<UserRepository>();
+builder.Services.AddScoped<IFestivalRepository, FestivalRepository>();
+
 
 var app = builder.Build();
 
