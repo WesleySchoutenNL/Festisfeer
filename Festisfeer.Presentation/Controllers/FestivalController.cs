@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Festisfeer.Domain.Models;
-using Festisfeer.Domain.Interfaces;
+using Festisfeer.Domain.Services;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
 using System.Linq;
@@ -9,20 +9,20 @@ namespace Festisfeer.Presentation.Controllers
 {
     public class FestivalController : Controller
     {
-        private readonly IFestivalRepository _festivalRepository;
+        private readonly FestivalService _festivalService;  // Gebruik de service
         private readonly IWebHostEnvironment _hostEnvironment;
 
         // Constructor
-        public FestivalController(IFestivalRepository festivalRepository, IWebHostEnvironment hostEnvironment)
+        public FestivalController(FestivalService festivalService, IWebHostEnvironment hostEnvironment)
         {
-            _festivalRepository = festivalRepository;
+            _festivalService = festivalService;
             _hostEnvironment = hostEnvironment;
         }
 
         // Alle festivals weergeven
         public IActionResult Index()
         {
-            var festivals = _festivalRepository.GetFestivals();  // Haal alle festivals via de interface
+            var festivals = _festivalService.GetFestivals();  // Haal festivals via de service
             return View(festivals);  // Stuur ze naar de view
         }
 
@@ -49,7 +49,7 @@ namespace Festisfeer.Presentation.Controllers
                     festival.FestivalImg = "/images/" + festivalImg.FileName;
                 }
 
-                _festivalRepository.AddFestival(festival);  // Voeg festival toe via de interface
+                _festivalService.AddFestival(festival);  // Voeg festival toe via de service
                 return RedirectToAction("Index");
             }
 
@@ -59,7 +59,7 @@ namespace Festisfeer.Presentation.Controllers
         // Festival details weergeven
         public IActionResult Details(int id)
         {
-            var festival = _festivalRepository.GetFestivalById(id);  // Haal specifiek festival via de interface
+            var festival = _festivalService.GetFestivalById(id);  // Haal festival via de service
 
             if (festival == null)
             {

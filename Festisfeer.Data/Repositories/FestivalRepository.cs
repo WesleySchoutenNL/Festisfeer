@@ -39,7 +39,7 @@ namespace Festisfeer.Data.Repositories
                                 EndDateTime = reader.GetDateTime("end_datetime"),
                                 Genre = reader.GetString("genre"),
                                 TicketPrice = reader.GetInt32("ticket_price"),
-                                FestivalImg = reader.GetString("festival_img")
+                                FestivalImg = reader.GetString("image_url")
                             });
                         }
                     }
@@ -75,7 +75,7 @@ namespace Festisfeer.Data.Repositories
                                 EndDateTime = reader.GetDateTime("end_datetime"),
                                 Genre = reader.GetString("genre"),
                                 TicketPrice = reader.GetInt32("ticket_price"),
-                                FestivalImg = reader.GetString("festival_img")
+                                FestivalImg = reader.GetString("image_url")
                             };
                         }
                     }
@@ -91,8 +91,8 @@ namespace Festisfeer.Data.Repositories
             using (MySqlConnection conn = new MySqlConnection(_connectionString))
             {
                 conn.Open();
-                string query = "INSERT INTO festival (name, location, start_datetime, end_datetime, genre, ticket_price, festival_img) " +
-                               "VALUES (@name, @location, @start_datetime, @end_datetime, @genre, @ticket_price, @festival_img)";
+                string query = "INSERT INTO festival (name, location, start_datetime, end_datetime, genre, ticket_price, image_url) " +
+                               "VALUES (@name, @location, @start_datetime, @end_datetime, @genre, @ticket_price, @image_url)";
 
                 using (MySqlCommand cmd = new MySqlCommand(query, conn))
                 {
@@ -102,7 +102,7 @@ namespace Festisfeer.Data.Repositories
                     cmd.Parameters.AddWithValue("@end_datetime", festival.EndDateTime);
                     cmd.Parameters.AddWithValue("@genre", festival.Genre);
                     cmd.Parameters.AddWithValue("@ticket_price", festival.TicketPrice);
-                    cmd.Parameters.AddWithValue("@festival_img", festival.FestivalImg);
+                    cmd.Parameters.AddWithValue("@image_url", festival.FestivalImg);
 
                     cmd.ExecuteNonQuery();
                 }
