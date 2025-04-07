@@ -1,9 +1,23 @@
-﻿<form asp-action="Login" method="post">
-    <label for="Email">E-mail</label>
-    <input type="email" id="Email" name="Email" required />
+﻿@{
+    ViewData["Title"] = "Inloggen";
+}
 
-    <label for="Password">Wachtwoord</label>
-    <input type="password" id="Password" name="Password" required />
+<h2 class="text-center mb-4">Inloggen</h2>
 
-    <button type="submit">Inloggen</button>
-</form>
+<div class="container">
+    <form asp-action="Login" method="post" class="card shadow p-4 mx-auto" style="max-width: 500px;">
+        <div class="mb-3">
+            <label for="Email" class="form-label">E-mailadres</label>
+            <input type="email" id="Email" name="Email" class="form-control" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="Password" class="form-label">Wachtwoord</label>
+            <input type="password" id="Password" name="Password" class="form-control" required />
+        </div>
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary w-100">Inloggen</button>
+        </div>
+    </form>
+</div>

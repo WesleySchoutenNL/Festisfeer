@@ -1,13 +1,28 @@
-﻿
-<form asp-action="Register" method="post">
-    <label for="Email">E-mail</label>
-    <input type="email" id="Email" name="Email" required />
+﻿@{
+    ViewData["Title"] = "Registreren";
+}
 
-    <label for="Username">Gebruikersnaam</label>
-    <input type="text" id="Username" name="Username" required />
+<h2 class="text-center mb-4">Registreren</h2>
 
-    <label for="Password">Wachtwoord</label>
-    <input type="password" id="Password" name="Password" required />
+<div class="container">
+    <form asp-action="Register" method="post" class="card shadow p-4 mx-auto" style="max-width: 500px;">
+        <div class="mb-3">
+            <label for="Email" class="form-label">E-mailadres</label>
+            <input type="email" id="Email" name="Email" class="form-control" required />
+        </div>
 
-    <button type="submit">Registreer</button>
-</form>
+        <div class="mb-3">
+            <label for="Username" class="form-label">Gebruikersnaam</label>
+            <input type="text" id="Username" name="Username" class="form-control" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="Password" class="form-label">Wachtwoord</label>
+            <input type="password" id="Password" name="Password" class="form-control" required />
+        </div>
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary w-100">Registreer</button>
+        </div>
+    </form>
+</div>
