@@ -17,8 +17,8 @@ builder.Services.AddSession(options =>
 // Voeg services toe aan de container
 builder.Services.AddControllersWithViews();
 
-// Registratie van je repositories
-builder.Services.AddScoped<IFestivalRepository, FestivalRepository>();  // Je interface en implementatie
+// Registratie van je repositories via de interfaces
+builder.Services.AddScoped<IFestivalRepository, FestivalRepository>();  // FestivalRepository via de interface IFestivalRepository
 builder.Services.AddScoped<IUserRepository, UserRepository>();  // Hier wordt de interface IUserRepository geregistreerd, niet UserRepository direct
 
 // Registratie van services

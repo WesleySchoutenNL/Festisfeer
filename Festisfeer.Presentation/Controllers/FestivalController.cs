@@ -3,7 +3,7 @@ using Festisfeer.Domain.Models;
 using Festisfeer.Domain.Services;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
-using System.Linq;
+using Microsoft.AspNetCore.Http;
 
 namespace Festisfeer.Presentation.Controllers
 {
@@ -29,12 +29,19 @@ namespace Festisfeer.Presentation.Controllers
         // Festival toevoegen (form)
         public IActionResult Add()
         {
+            // Controleer of de gebruiker ingelogd is en de rol "beheerder" heeft
+            var userRole = HttpContext.Session.GetString("Role");
+            if (userRole != "beheerder")  // Alleen beheerders mogen festivals toevoegen
+            {
+                return RedirectToAction("Index", "Home");  // Redirect naar de homepagina als de gebruiker geen beheerder is
+            }
+
             return View(new Festival());
         }
 
         // Voeg festival toe aan database
         [HttpPost]
-        public IActionResult Add(Festival festival, Microsoft.AspNetCore.Http.IFormFile festivalImg)
+        public IActionResult Add(Festival festival, IFormFile festivalImg)
         {
             if (ModelState.IsValid)
             {
