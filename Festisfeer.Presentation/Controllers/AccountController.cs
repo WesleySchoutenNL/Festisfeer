@@ -3,14 +3,16 @@ using Festisfeer.Data.Repositories;
 using Festisfeer.Domain.Models;
 using Festisfeer.Presentation.Models;
 using Microsoft.AspNetCore.Http;
+using Festisfeer.Domain.Interfaces;
 
 namespace Festisfeer.Presentation.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly UserRepository _userRepository;
+        private readonly IUserRepository _userRepository;  // Gebruik de interface
 
-        public AccountController(UserRepository userRepository)
+        // Wijzig de constructor om IUserRepository te accepteren, niet de concrete klasse
+        public AccountController(IUserRepository userRepository)
         {
             _userRepository = userRepository;
         }
@@ -40,7 +42,6 @@ namespace Festisfeer.Presentation.Controllers
                 }
                 catch (Exception ex)
                 {
-                    // Foutmelding toevoegen aan de ModelState als het e-mailadres of de gebruikersnaam al bestaat
                     ModelState.AddModelError(string.Empty, ex.Message);
                 }
             }

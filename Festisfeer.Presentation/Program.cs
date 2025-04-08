@@ -1,8 +1,8 @@
 using Festisfeer.Data.Repositories;
 using Festisfeer.Domain.Interfaces;
 using Festisfeer.Domain.Services;
-using Festisfeer.Domain.Interfaces;
-using Festisfeer.Presentation.Services;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Session;  // Zorg ervoor dat deze namespace wordt geïmporteerd
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,14 +16,17 @@ builder.Services.AddSession(options =>
 
 // Voeg services toe aan de container
 builder.Services.AddControllersWithViews();
-builder.Services.AddScoped<FestivalRepository>();
-builder.Services.AddScoped<UserRepository>();
-builder.Services.AddScoped<IFestivalRepository, FestivalRepository>();
-builder.Services.AddScoped<FestivalService>();
 
-// Session-related services
-builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-builder.Services.AddScoped<IUserSessionService, UserSessionService>();
+// Registratie van je repositories
+builder.Services.AddScoped<IFestivalRepository, FestivalRepository>();  // Je interface en implementatie
+builder.Services.AddScoped<IUserRepository, UserRepository>();  // Hier wordt de interface IUserRepository geregistreerd, niet UserRepository direct
+
+// Registratie van services
+builder.Services.AddScoped<FestivalService>();  // FestivalService wordt toegevoegd via DI
+builder.Services.AddScoped<IUserSessionService, UserSessionService>();  // UserSessionService wordt toegevoegd via DI
+
+// Session-gerelateerde services
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();  // Zorg ervoor dat IHttpContextAccessor correct is geregistreerd
 
 var app = builder.Build();
 
@@ -32,9 +35,10 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-app.UseSession(); // Let op: voor UseAuthorization!
+app.UseSession(); // Zorg ervoor dat session middleware vóór authorization wordt aangeroepen
 app.UseAuthorization();
 
+// Route configuratie
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
