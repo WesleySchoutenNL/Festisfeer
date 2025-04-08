@@ -4,38 +4,33 @@ using Festisfeer.Domain.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Voeg session services toe
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);  // Sessie tijdsduur instellen
+});
+
 // Voeg services toe aan de container
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<FestivalRepository>();
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<IFestivalRepository, FestivalRepository>();
-builder.Services.AddScoped<FestivalService>();  // Voeg de FestivalService toe aan DI
-
+builder.Services.AddScoped<FestivalService>();
+    
 var app = builder.Build();
 
-// Configureer de HTTP-aanvraagpijplijn.
-if (app.Environment.IsDevelopment())
-{
-    app.UseDeveloperExceptionPage();
-}
-else
-{
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
-}
+// Zorg ervoor dat de session middleware vóór routing wordt geplaatst
+app.UseSession();
 
+// Configureer de HTTP-aanvraagpijplijn
 app.UseHttpsRedirection();
-app.UseStaticFiles(); 
-
+app.UseStaticFiles();
 
 app.UseRouting();
-
 app.UseAuthorization();
-
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-// Start de applicatie
 app.Run();

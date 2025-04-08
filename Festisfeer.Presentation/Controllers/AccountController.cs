@@ -1,68 +1,77 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Festisfeer.Data.Repositories;
+﻿using Festisfeer.Data.Repositories;
 using Festisfeer.Domain.Models;
 using Festisfeer.Presentation.Models;
+using Microsoft.AspNetCore.Mvc;
 
-namespace Festisfeer.Presentation.Controllers
+public class AccountController : Controller
 {
-    public class AccountController : Controller
+    private readonly UserRepository _userRepository;
+
+    public AccountController(UserRepository userRepository)
     {
-        private readonly UserRepository _userRepository;
+        _userRepository = userRepository;
+    }
 
-        public AccountController(UserRepository userRepository)
+    // Inloggen
+    [HttpPost]
+    public IActionResult Login(LoginViewModel model)
+    {
+        if (ModelState.IsValid)
         {
-            _userRepository = userRepository;
-        }
-
-        // Registreren
-        [HttpPost]
-        public IActionResult Register(RegisterViewModel model)
-        {
-            if (ModelState.IsValid)
+            var user = _userRepository.LoginUser(model.Email, model.Password);
+            if (user != null)
             {
-                var user = new User
-                {
-                    Email = model.Email,
-                    Password = model.Password,
-                    Username = model.Username
-                };
+                // Gebruiker in de sessie opslaan
+                HttpContext.Session.SetString("Username", user.Username);
+                HttpContext.Session.SetInt32("UserId", user.Id);
 
-                _userRepository.RegisterUser(user);
-                return RedirectToAction("Login");
+                return RedirectToAction("Index", "Home");
             }
-            return View(model);
+            ModelState.AddModelError(string.Empty, "Ongeldige inloggegevens.");
         }
+        return View(model);
+    }
 
-        // Inloggen
-        [HttpPost]
-        public IActionResult Login(LoginViewModel model)
+    // Uitloggen
+    public IActionResult Logout()
+    {
+        // Verwijder gebruiker uit sessie
+        HttpContext.Session.Remove("Username");
+        HttpContext.Session.Remove("UserId");
+
+        return RedirectToAction("Index", "Home");
+    }
+
+    // Register pagina tonen
+    [HttpGet]
+    public IActionResult Register()
+    {
+        return View();
+    }
+
+    // Registreren
+    [HttpPost]
+    public IActionResult Register(RegisterViewModel model)
+    {
+        if (ModelState.IsValid)
         {
-            //Controleren of alles juist is ingevuld 
-            if (ModelState.IsValid)
+            var user = new User
             {
-                var user = _userRepository.LoginUser(model.Email, model.Password);
-                if (user != null)
-                {
-                    //Cookies instellen
-                    return RedirectToAction("Index", "Home");
-                }
-                ModelState.AddModelError(string.Empty, "Ongeldige inloggegevens.");
-            }
-            return View(model);
-        }
+                Email = model.Email,
+                Password = model.Password,
+                Username = model.Username
+            };
 
-        //Register pagina tonen
-        [HttpGet]
-        public IActionResult Register()
-        {
-            return View();
+            _userRepository.RegisterUser(user);
+            return RedirectToAction("Login");
         }
+        return View(model);
+    }
 
-        //Login pagina tonen
-        [HttpGet]
-        public IActionResult Login()
-        {
-            return View();
-        }
+    // Login pagina tonen
+    [HttpGet]
+    public IActionResult Login()
+    {
+        return View();
     }
 }
