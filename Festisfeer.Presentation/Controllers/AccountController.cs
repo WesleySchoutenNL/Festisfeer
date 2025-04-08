@@ -1,77 +1,83 @@
-﻿using Festisfeer.Data.Repositories;
+﻿using Microsoft.AspNetCore.Mvc;
+using Festisfeer.Data.Repositories;
 using Festisfeer.Domain.Models;
 using Festisfeer.Presentation.Models;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 
-public class AccountController : Controller
+namespace Festisfeer.Presentation.Controllers
 {
-    private readonly UserRepository _userRepository;
-
-    public AccountController(UserRepository userRepository)
+    public class AccountController : Controller
     {
-        _userRepository = userRepository;
-    }
+        private readonly UserRepository _userRepository;
 
-    // Inloggen
-    [HttpPost]
-    public IActionResult Login(LoginViewModel model)
-    {
-        if (ModelState.IsValid)
+        public AccountController(UserRepository userRepository)
         {
-            var user = _userRepository.LoginUser(model.Email, model.Password);
-            if (user != null)
-            {
-                // Gebruiker in de sessie opslaan
-                HttpContext.Session.SetString("Username", user.Username);
-                HttpContext.Session.SetInt32("UserId", user.Id);
+            _userRepository = userRepository;
+        }
 
-                return RedirectToAction("Index", "Home");
+        [HttpGet]
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Register(RegisterViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var user = new User
+                    {
+                        Email = model.Email,
+                        Password = model.Password,
+                        Username = model.Username
+                    };
+
+                    _userRepository.RegisterUser(user);
+                    return RedirectToAction("Login");
+                }
+                catch (Exception ex)
+                {
+                    // Foutmelding toevoegen aan de ModelState als het e-mailadres of de gebruikersnaam al bestaat
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                }
             }
-            ModelState.AddModelError(string.Empty, "Ongeldige inloggegevens.");
+
+            return View(model);
         }
-        return View(model);
-    }
 
-    // Uitloggen
-    public IActionResult Logout()
-    {
-        // Verwijder gebruiker uit sessie
-        HttpContext.Session.Remove("Username");
-        HttpContext.Session.Remove("UserId");
-
-        return RedirectToAction("Index", "Home");
-    }
-
-    // Register pagina tonen
-    [HttpGet]
-    public IActionResult Register()
-    {
-        return View();
-    }
-
-    // Registreren
-    [HttpPost]
-    public IActionResult Register(RegisterViewModel model)
-    {
-        if (ModelState.IsValid)
+        [HttpGet]
+        public IActionResult Login()
         {
-            var user = new User
-            {
-                Email = model.Email,
-                Password = model.Password,
-                Username = model.Username
-            };
-
-            _userRepository.RegisterUser(user);
-            return RedirectToAction("Login");
+            return View();
         }
-        return View(model);
-    }
 
-    // Login pagina tonen
-    [HttpGet]
-    public IActionResult Login()
-    {
-        return View();
+        [HttpPost]
+        public IActionResult Login(LoginViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = _userRepository.LoginUser(model.Email, model.Password);
+                if (user != null)
+                {
+                    HttpContext.Session.SetInt32("UserId", user.Id);
+                    HttpContext.Session.SetString("Username", user.Username);
+
+                    return RedirectToAction("Index", "Home");
+                }
+
+                ModelState.AddModelError(string.Empty, "Ongeldige inloggegevens.");
+            }
+
+            return View(model);
+        }
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index", "Home");
+        }
     }
 }

@@ -1,4 +1,6 @@
-﻿@{
+﻿@model Festisfeer.Presentation.Models.RegisterViewModel
+
+@{
     ViewData["Title"] = "Registreren";
 }
 
@@ -21,8 +23,25 @@
             <input type="password" id="Password" name="Password" class="form-control" required />
         </div>
 
+        <div class="mb-3">
+            <label for="ConfirmPassword" class="form-label">Bevestig Wachtwoord</label>
+            <input type="password" id="ConfirmPassword" name="ConfirmPassword" class="form-control" required />
+        </div>
+
+        @if (ViewData.ModelState != null && ViewData.ModelState.ErrorCount > 0)
+        {
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <li>@error.ErrorMessage</li>
+                    }
+                </ul>
+            </div>
+        }
+
         <div class="text-center">
-            <button type="submit" class="btn btn-primary w-100">Registreer</button>
+            <button type="submit" class="btn btn-primary w-100">Registreren</button>
         </div>
     </form>
 </div>
