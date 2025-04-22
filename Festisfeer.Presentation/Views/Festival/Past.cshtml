@@ -1,0 +1,65 @@
+﻿@model List<Festisfeer.Domain.Models.Festival>
+
+<h2 class="text-center mb-4">Festivals</h2>
+
+<div class="container">
+    <div class="row g-4">
+        @foreach (var festival in Model)
+        {
+            <div class="col-md-4 col-sm-6">
+                <div class="card shadow-sm border-0 position-relative">
+                    <a href="@Url.Action("Details", "Festival", new { id = festival.Id })">
+                        <div class="festival-img-container">
+                            <img src="@festival.FestivalImg" class="card-img-top festival-img" alt="Festival afbeelding">
+                        </div>
+                    </a>
+                    <div class="card-body position-absolute top-50 start-50 translate-middle text-center festival-name">
+                        <h5 class="card-title text-white">@festival.Name</h5>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- CSS voor hover effect -->
+<style>
+    .card {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .festival-img-container {
+        height: 200px; /* Bepaal de hoogte van de afbeelding */
+        overflow: hidden;
+    }
+
+    .festival-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Zorgt ervoor dat de afbeelding niet vervormd wordt en de afbeelding netjes wordt weergegeven */
+        transition: transform 0.3s ease;
+    }
+
+    .card:hover .festival-img {
+        transform: scale(1.1); /* Vergroot de afbeelding een beetje bij hover */
+    }
+
+    .festival-name {
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    .card:hover .festival-name {
+        opacity: 1;
+        visibility: visible; /* Maak de naam zichtbaar bij hover */
+    }
+
+    .card-body h5 {
+        font-size: 1.25rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6);
+    }
+</style>

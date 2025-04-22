@@ -8,8 +8,10 @@ namespace Festisfeer.Data.Repositories
 {
     public class FestivalRepository : IFestivalRepository
     {
+        //Connectie string
         private readonly string _connectionString;
-
+        
+        //Connection string ophalen
         public FestivalRepository(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
@@ -18,12 +20,13 @@ namespace Festisfeer.Data.Repositories
         // Haalt alle festivals op uit de database
         public List<Festival> GetFestivals()
         {
+            // Lijst om festivals in op te slaan
             List<Festival> festivals = new List<Festival>();
 
             using (MySqlConnection conn = new MySqlConnection(_connectionString))
             {
                 conn.Open();
-                string query = "SELECT * FROM festival";
+                var query = "SELECT * FROM festival ORDER BY start_datetime ASC";  // Sorteer op event_date van oud naar nieuw
                 using (MySqlCommand cmd = new MySqlCommand(query, conn))
                 {
                     using (MySqlDataReader reader = cmd.ExecuteReader())

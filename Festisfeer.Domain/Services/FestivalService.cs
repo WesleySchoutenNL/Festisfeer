@@ -1,32 +1,33 @@
 ﻿using System.Collections.Generic;
-using Festisfeer.Domain.Interfaces;
-using Festisfeer.Domain.Models;
+using Festisfeer.Domain.Interfaces; 
+using Festisfeer.Domain.Models;    
 
 namespace Festisfeer.Domain.Services
 {
+    // Deze service zorgt voor de businesslogica rondom festivals
     public class FestivalService
     {
         private readonly IFestivalRepository _festivalRepository;
 
-        // Constructor
+        // constructor
         public FestivalService(IFestivalRepository festivalRepository)
         {
             _festivalRepository = festivalRepository;
         }
 
-        // Alle festivals ophalen
+        // Haalt alle festivals op via de interfacerepository
         public List<Festival> GetFestivals()
         {
             return _festivalRepository.GetFestivals();
         }
 
-        // Festival ophalen op basis van ID
+        // Haalt één festival op op basis van ID
         public Festival GetFestivalById(int id)
         {
             return _festivalRepository.GetFestivalById(id);
         }
 
-        // Festival toevoegen
+        // Voegt een nieuw festival toe aan de database
         public void AddFestival(Festival festival)
         {
             _festivalRepository.AddFestival(festival);
