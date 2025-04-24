@@ -1,4 +1,4 @@
-﻿@model List<Festisfeer.Domain.Models.Festival>
+﻿@model List<Festisfeer.Presentation.ViewModels.FestivalViewModel>
 
 <h2 class="text-center mb-4">Festivals</h2>
 
@@ -14,9 +14,9 @@
                     <div class="card-body">
                         <h5 class="card-title">@festival.Name</h5>
                         <p class="card-text"><strong>Locatie:</strong> @festival.Location</p>
-                        <p class="card-text"><strong>Datum:</strong> @festival.StartDateTime.ToString("yyyy-MM-dd HH:mm") - @festival.EndDateTime.ToString("yyyy-MM-dd HH:mm")</p>
+                        <p class="card-text"><strong>Datum:</strong> @festival.Period</p>
                         <p class="card-text"><strong>Genre:</strong> @festival.Genre</p>
-                        <p class="card-text"><strong>Ticketprijs:</strong> €@festival.TicketPrice</p>
+                        <p class="card-text"><strong>Ticketprijs:</strong> @festival.TicketPriceFormatted</p>
                     </div>
                 </div>
             </div>
