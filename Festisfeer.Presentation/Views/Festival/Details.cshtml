@@ -1,16 +1,177 @@
 ﻿@model Festisfeer.Presentation.ViewModels.FestivalViewModel
 
-<h2 class="text-center mb-4">@Model.Name</h2>
+<h2 class="text-center mb-4 text-dark">@Model.Name</h2>
 
 <div class="container">
-    <div class="card shadow-sm border-0">
-        <img src="@Model.FestivalImg" class="card-img-top" alt="Festival afbeelding" style="height: 300px; object-fit: cover;">
+    <!-- Festival Info Card -->
+    <div class="card shadow-lg border-0 rounded-3 mb-4">
+        <img src="@Model.FestivalImg" class="card-img-top" alt="Festival afbeelding" style="height: 300px; object-fit: cover; border-top-left-radius: 0.375rem; border-top-right-radius: 0.375rem;">
         <div class="card-body">
-            <h5 class="card-title">@Model.Name</h5>
+            <h5 class="card-title text-primary">@Model.Name</h5>
             <p class="card-text"><strong>Locatie:</strong> @Model.Location</p>
             <p class="card-text"><strong>Datum:</strong> @Model.Period</p>
             <p class="card-text"><strong>Genre:</strong> @Model.Genre</p>
             <p class="card-text"><strong>Ticketprijs:</strong> @Model.TicketPriceFormatted</p>
         </div>
     </div>
+
+    <!-- Reviews Section -->
+    <div class="mt-5">
+        <h3 class="text-center mb-4 text-dark">Reviews</h3>
+
+        @if (Model.Reviews.Any())
+        {
+            <div class="row justify-content-center">
+                <div class="col-md-12">
+                    @foreach (var review in Model.Reviews)
+                    {
+                        <div class="card mb-3 shadow-sm border-0 rounded-3">
+                            <div class="card-body">
+                                <h5 class="card-title text-secondary">@review.UserName</h5>
+                                <p class="card-text">@review.Content</p>
+                                <p class="card-text"><strong>Rating:</strong> @review.Rating</p>
+                                <p class="card-text"><small class="text-muted">Geplaatst op: @review.CreatedAt.ToString("dd MMM yyyy")</small></p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info text-center rounded-3">
+                Er zijn nog geen reviews voor dit festival.
+            </div>
+        }
+    </div>
+
+    <!-- Review Form (only visible if user is authenticated via session) -->
+    @if (Context.Session.GetInt32("UserId") != null)
+    {
+        <div class="mt-5">
+            <h4 class="text-center mb-4 text-dark">Laat een review achter</h4>
+            <form asp-action="AddReview" method="post" class="card shadow-lg border-0 rounded-3 p-4">
+                <div class="card-body">
+                    <input type="hidden" name="festivalId" value="@Model.Id" />
+
+                    <div class="form-group mb-3">
+                        <label for="rating" class="form-label">Rating (1-5):</label>
+                        <input type="number" name="rating" min="1" max="5" class="form-control" required />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="content" class="form-label">Je review:</label>
+                        <textarea name="content" class="form-control" rows="4" placeholder="Schrijf hier je ervaring..." required></textarea>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-success">Verstuur review</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    }
+    else
+    {
+        <p class="mt-3 text-center">
+            <a href="/Account/Login" class="btn btn-login">Log in om een review te plaatsen</a>
+        </p>
+    }
 </div>
+
+<!-- Custom CSS -->
+<style>
+    body {
+        font-family: 'Roboto', sans-serif;
+        background-color: #f8f9fa;
+    }
+
+    .card {
+        background-color: #ffffff;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    .card-title {
+        font-size: 1.25rem;
+        color: #343a40;
+        font-weight: bold;
+    }
+
+    .review-form textarea {
+        resize: vertical;
+        min-height: 150px;
+    }
+
+    .form-label {
+        font-weight: bold;
+    }
+
+    .alert-info {
+        background-color: #d1ecf1;
+        border-color: #bee5eb;
+        color: #0c5460;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+
+        .btn-success:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+
+    .btn-link {
+        color: #007bff;
+    }
+
+        .btn-link:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+
+    .shadow-sm {
+        box-shadow: 0 .5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+
+    .rounded-3 {
+        border-radius: 1rem;
+    }
+
+    .btn-login {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-align: center;
+        text-decoration: none;
+        background-color: #007bff;
+        color: white;
+        border-radius: 25px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+        .btn-login:hover {
+            background-color: #0056b3;
+            color: white;
+            text-decoration: none;
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-login:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);
+        }
+
+        .btn-login:active {
+            background-color: #004085;
+            box-shadow: none;
+        }
+</style>

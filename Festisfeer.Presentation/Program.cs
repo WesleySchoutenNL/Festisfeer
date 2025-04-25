@@ -20,11 +20,13 @@ builder.Services.AddControllersWithViews();
 // Registratie van je repositories via de interfaces
 builder.Services.AddScoped<IFestivalRepository, FestivalRepository>();  // FestivalRepository via de interface IFestivalRepository
 builder.Services.AddScoped<IUserRepository, UserRepository>();  // Hier wordt de interface IUserRepository geregistreerd, niet UserRepository direct
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+
 
 // Registratie van services
 builder.Services.AddScoped<FestivalService>();  // FestivalService wordt toegevoegd via DI
 builder.Services.AddScoped<IUserSessionService, UserSessionService>();  // UserSessionService wordt toegevoegd via DI
-
+builder.Services.AddScoped<ReviewService>();
 // Session-gerelateerde services
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();  // Zorg ervoor dat IHttpContextAccessor correct is geregistreerd
 

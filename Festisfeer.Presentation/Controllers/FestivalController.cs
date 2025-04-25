@@ -9,16 +9,18 @@ using System.Linq;  // Voor .Select()
 
 namespace Festisfeer.Presentation.Controllers
 {
-    // Controller van de festivals
+    // Controller voor de festivals
     public class FestivalController : Controller
     {
-        private readonly FestivalService _festivalService;  // Verwijzing naar de domain (Logica) laag
+        private readonly FestivalService _festivalService;  // Verwijzing naar de domain (logica) laag
         private readonly IWebHostEnvironment _hostEnvironment; // Voor de afbeeldingen
+        private readonly ReviewService _reviewService; // Service voor reviews
 
-        // Constructor voor service en hostservice / afbeelding uploaden
-        public FestivalController(FestivalService festivalService, IWebHostEnvironment hostEnvironment)
+        // Constructor voor services en hostomgeving / afbeelding uploaden
+        public FestivalController(FestivalService festivalService, ReviewService reviewService, IWebHostEnvironment hostEnvironment)
         {
             _festivalService = festivalService;
+            _reviewService = reviewService;
             _hostEnvironment = hostEnvironment;
         }
 
@@ -41,7 +43,7 @@ namespace Festisfeer.Presentation.Controllers
             return View(viewModels);
         }
 
-        // Toon alle festivals op de pagina (bijv. alleen de oude)
+        // Toon festivals die al voorbij zijn (bijvoorbeeld oude festivals)
         public IActionResult Past()
         {
             var festivals = _festivalService.GetFestivals();
@@ -51,7 +53,6 @@ namespace Festisfeer.Presentation.Controllers
         // Formulier om een nieuw festival toe te voegen
         public IActionResult Add()
         {
-            // Rol pakken en kijken of het een beheerder is
             var userRole = HttpContext.Session.GetString("Role");
             if (userRole != "beheerder")
             {
@@ -61,7 +62,7 @@ namespace Festisfeer.Presentation.Controllers
             return View(new Festival());
         }
 
-        // Toevoegen aan database
+        // Toevoegen aan de database
         [HttpPost]
         public IActionResult Add(Festival festival, IFormFile festivalImg)
         {
@@ -76,17 +77,17 @@ namespace Festisfeer.Presentation.Controllers
                         festivalImg.CopyTo(fileStream);
                     }
 
-                    // Koppel het pad van de afbeelding aan het festival
                     festival.FestivalImg = "/images/" + festivalImg.FileName;
                 }
 
-                _festivalService.AddFestival(festival); // Service gebruiken om festival toe te voegen
+                _festivalService.AddFestival(festival); // Gebruik service om festival toe te voegen
                 return RedirectToAction("Index");
             }
 
             return View(festival);
         }
 
+        // Details van een specifiek festival tonen
         // Details van een specifiek festival tonen
         public IActionResult Details(int id)
         {
@@ -97,6 +98,10 @@ namespace Festisfeer.Presentation.Controllers
                 return NotFound();
             }
 
+            // Haal de reviews voor dit festival op
+            var reviews = _reviewService.GetReviewsByFestivalId(id);
+
+            // Maak het ViewModel aan en voeg reviews toe
             var viewModel = new FestivalViewModel
             {
                 Id = festival.Id,
@@ -105,10 +110,47 @@ namespace Festisfeer.Presentation.Controllers
                 Period = $"{festival.StartDateTime:dd MMM yyyy} - {festival.EndDateTime:dd MMM yyyy}",
                 Genre = festival.Genre,
                 FestivalImg = festival.FestivalImg,
-                TicketPriceFormatted = $"€ {festival.TicketPrice:0.00}"
+                TicketPriceFormatted = $"€ {festival.TicketPrice:0.00}",
+                Reviews = reviews.Select(r => new ReviewViewModel
+                {
+                    UserName = r.UserName,  // Gebruikersnaam van degene die de review plaatst
+                    Content = r.Content,
+                    Rating = r.Rating,
+                    CreatedAt = r.CreatedAt  // We zetten CreatedAt nu direct als DateTime in de ViewModel
+                }).ToList()
             };
 
             return View(viewModel);
+        }
+
+        // Actie om een review toe te voegen
+        [HttpPost]
+        public IActionResult AddReview(int festivalId, string content, int rating)
+        {
+            // Controleer of de gebruiker ingelogd is via de sessie
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                // Als de gebruiker niet ingelogd is, stuur hem naar de loginpagina
+                return RedirectToAction("Login", "Account");
+            }
+
+            // Maak een nieuwe review aan
+            var review = new Review
+            {
+                FestivalId = festivalId,
+                UserId = (int)userId,  // Gebruik de UserId uit de sessie
+                Content = content,
+                Rating = rating,
+                CreatedAt = DateTime.Now
+            };
+
+            // Voeg de review toe via de ReviewService
+            _reviewService.AddReview(review);
+
+            // Terug naar de details van het festival met een succesbericht
+            TempData["Success"] = "Je review is succesvol geplaatst!";
+            return RedirectToAction("Details", new { id = festivalId });
         }
     }
 }
