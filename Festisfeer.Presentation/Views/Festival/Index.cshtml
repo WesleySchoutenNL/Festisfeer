@@ -1,25 +1,70 @@
 ﻿@model List<Festisfeer.Presentation.ViewModels.FestivalViewModel>
 
-<h2 class="text-center mb-4">Festivals</h2>
+<h2 class="text-center mb-5">Festivals</h2>
 
 <div class="container">
     <div class="row g-4">
         @foreach (var festival in Model)
         {
             <div class="col-md-4 col-sm-6">
-                <div class="card shadow-sm border-0">
+                <div class="card shadow-lg border-0 h-100">
                     <a href="@Url.Action("Details", "Festival", new { id = festival.Id })">
-                        <img src="@festival.FestivalImg" class="card-img-top" alt="Festival afbeelding" style="height: 200px; object-fit: cover;">
+                        <img src="@festival.FestivalImg" class="card-img-top" alt="Festival afbeelding" style="height: 250px; object-fit: cover; border-radius: 8px;">
                     </a>
-                    <div class="card-body">
-                        <h5 class="card-title">@festival.Name</h5>
-                        <p class="card-text"><strong>Locatie:</strong> @festival.Location</p>
-                        <p class="card-text"><strong>Datum:</strong> @festival.Period</p>
-                        <p class="card-text"><strong>Genre:</strong> @festival.Genre</p>
-                        <p class="card-text"><strong>Ticketprijs:</strong> @festival.TicketPriceFormatted</p>
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title text-center">@festival.Name</h5>
+                        <p class="card-text text-center"><strong>Datum:</strong> @festival.Period</p>
+                        <p class="card-text text-center"><strong>Genre:</strong> @festival.Genre</p>    
                     </div>
                 </div>
             </div>
         }
     </div>
 </div>
+
+<style>
+    .card {
+        background-color: #fff;
+        border-radius: 10px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+    .card-body {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .card-text {
+        color: #555;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+        transition: background-color 0.2s ease;
+    }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+
+    /* Optional: Add some space at the bottom */
+    .container {
+        margin-bottom: 40px;
+    }
+</style>

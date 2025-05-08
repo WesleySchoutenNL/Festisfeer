@@ -20,7 +20,10 @@
                 </button>
                 <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <!-- Voeg hier eventueel navigatielinks toe zoals Festivals of Home -->
+                        <!-- Voeg een festival knop toe voor navigatie -->
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Festival" asp-action="Index">Festivals</a>
+                        </li>
                     </ul>
                     <div class="d-flex align-items-center">
                         @if (Context.Session.GetInt32("UserId") != null)

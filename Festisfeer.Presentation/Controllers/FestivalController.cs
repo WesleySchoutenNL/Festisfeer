@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Hosting;
 using System.IO;
 using Microsoft.AspNetCore.Http;
 using Festisfeer.Presentation.ViewModels;  // ViewModel import
-using System.Linq;  // Voor .Select()
 
 namespace Festisfeer.Presentation.Controllers
 {
@@ -41,6 +40,41 @@ namespace Festisfeer.Presentation.Controllers
             }).ToList();
 
             return View(viewModels);
+        }
+
+        // Details van een specifiek festival tonen
+        public IActionResult Details(int id)
+        {
+            var festival = _festivalService.GetFestivalById(id);
+
+            if (festival == null)
+            {
+                return NotFound();
+            }
+
+            // Haal de reviews voor dit festival op
+            var reviews = _reviewService.GetReviewsByFestivalId(id);
+
+            // Maak het ViewModel aan en voeg reviews toe
+            var viewModel = new FestivalViewModel
+            {
+                Id = festival.Id,
+                Name = festival.Name,
+                Location = festival.Location,
+                Period = $"{festival.StartDateTime:dd MMM yyyy} - {festival.EndDateTime:dd MMM yyyy}",
+                Genre = festival.Genre,
+                FestivalImg = festival.FestivalImg,
+                TicketPriceFormatted = $"€ {festival.TicketPrice:0.00}",
+                Reviews = reviews.Select(r => new ReviewViewModel
+                {
+                    UserName = r.UserName,  // Gebruikersnaam van degene die de review plaatst
+                    Content = r.Content,
+                    Rating = r.Rating,
+                    CreatedAt = r.CreatedAt  // We zetten CreatedAt nu direct als DateTime in de ViewModel
+                }).ToList()
+            };
+
+            return View(viewModel);
         }
 
         // Toon festivals die al voorbij zijn (bijvoorbeeld oude festivals)
@@ -87,41 +121,7 @@ namespace Festisfeer.Presentation.Controllers
             return View(festival);
         }
 
-        // Details van een specifiek festival tonen
-        // Details van een specifiek festival tonen
-        public IActionResult Details(int id)
-        {
-            var festival = _festivalService.GetFestivalById(id);
 
-            if (festival == null)
-            {
-                return NotFound();
-            }
-
-            // Haal de reviews voor dit festival op
-            var reviews = _reviewService.GetReviewsByFestivalId(id);
-
-            // Maak het ViewModel aan en voeg reviews toe
-            var viewModel = new FestivalViewModel
-            {
-                Id = festival.Id,
-                Name = festival.Name,
-                Location = festival.Location,
-                Period = $"{festival.StartDateTime:dd MMM yyyy} - {festival.EndDateTime:dd MMM yyyy}",
-                Genre = festival.Genre,
-                FestivalImg = festival.FestivalImg,
-                TicketPriceFormatted = $"€ {festival.TicketPrice:0.00}",
-                Reviews = reviews.Select(r => new ReviewViewModel
-                {
-                    UserName = r.UserName,  // Gebruikersnaam van degene die de review plaatst
-                    Content = r.Content,
-                    Rating = r.Rating,
-                    CreatedAt = r.CreatedAt  // We zetten CreatedAt nu direct als DateTime in de ViewModel
-                }).ToList()
-            };
-
-            return View(viewModel);
-        }
 
         // Actie om een review toe te voegen
         [HttpPost]
