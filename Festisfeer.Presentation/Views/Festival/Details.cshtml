@@ -1,21 +1,28 @@
 ﻿@model Festisfeer.Presentation.ViewModels.FestivalViewModel
+@using Microsoft.AspNetCore.Http
+
+@{
+    ViewData["Title"] = "Festival Details";
+    var currentUserId = Context.Session.GetInt32("UserId");
+    var editCommentId = ViewBag.EditCommentId as int?;
+}
 
 <h2 class="text-center mb-4 text-dark">@Model.Name</h2>
 
 <div class="container">
-    <!-- Festival Info Card -->
+    <!-- Festival Info -->
     <div class="card shadow-lg border-0 rounded-3 mb-4">
-        <img src="@Model.FestivalImg" class="card-img-top" alt="Festival afbeelding" style="height: 300px; object-fit: cover; border-top-left-radius: 0.375rem; border-top-right-radius: 0.375rem;">
+        <img src="@Model.FestivalImg" class="card-img-top" alt="Festival afbeelding" style="height: 300px; object-fit: cover;">
         <div class="card-body">
             <h5 class="card-title text-primary">@Model.Name</h5>
-            <p class="card-text"><strong>Locatie:</strong> @Model.Location</p>
-            <p class="card-text"><strong>Datum:</strong> @Model.Period</p>
-            <p class="card-text"><strong>Genre:</strong> @Model.Genre</p>
-            <p class="card-text"><strong>Ticketprijs:</strong> @Model.TicketPriceFormatted</p>
+            <p><strong>Locatie:</strong> @Model.Location</p>
+            <p><strong>Datum:</strong> @Model.Period</p>
+            <p><strong>Genre:</strong> @Model.Genre</p>
+            <p><strong>Ticketprijs:</strong> @Model.TicketPriceFormatted</p>
         </div>
     </div>
 
-    <!-- Reviews Section -->
+    <!-- Reviews -->
     <div class="mt-5">
         <h3 class="text-center mb-4 text-dark">Reviews</h3>
 
@@ -30,7 +37,83 @@
                                 <h5 class="card-title text-secondary">@review.UserName</h5>
                                 <p class="card-text">@review.Content</p>
                                 <p class="card-text"><strong>Rating:</strong> @review.Rating</p>
-                                <p class="card-text"><small class="text-muted">Geplaatst op: @review.CreatedAt.ToString("dd MMM yyyy")</small></p>
+                                <p class="card-text">
+                                    <small class="text-muted">Geplaatst op: @review.CreatedAt.ToString("dd MMM yyyy")</small>
+                                </p>
+
+                                <!-- Collapse Comments Toggle -->
+                                <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#comments-@review.Id">
+                                    Reacties bekijken / toevoegen
+                                </button>
+
+                                <!-- Comments Collapse Section -->
+                                <div class="collapse mt-3" id="comments-@review.Id">
+                                    @if (review.Comments != null && review.Comments.Any())
+                                    {
+                                        <ul class="list-group mb-3">
+                                            @foreach (var comment in review.Comments)
+                                            {
+                                                <li class="list-group-item">
+                                                    <strong>@comment.UserName:</strong>
+
+                                                    @if (editCommentId == comment.Id && currentUserId == comment.UserId)
+                                                    {
+                                                        <!-- Inline edit form -->
+                                                        <form asp-action="EditComment" method="post">
+                                                            <input type="hidden" name="commentId" value="@comment.Id" />
+                                                            <input type="hidden" name="festivalId" value="@Model.Id" />
+                                                            <textarea name="content" class="form-control" rows="2">@comment.Content</textarea>
+                                                            <div class="mt-2">
+                                                                <button type="submit" class="btn btn-success btn-sm">Opslaan</button>
+                                                                <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary btn-sm">Annuleren</a>
+                                                            </div>
+                                                        </form>
+                                                    }
+                                                    else
+                                                    {
+                                                        @comment.Content
+                                                        <br />
+                                                        <small class="text-muted">@comment.CreatedAt.ToString("dd MMM yyyy")</small>
+
+                                                        @if (currentUserId == comment.UserId)
+                                                        {
+                                                            <div class="mt-2">
+                                                                <form asp-action="DeleteComment" method="post" class="d-inline">
+                                                                    <input type="hidden" name="commentId" value="@comment.Id" />
+                                                                    <input type="hidden" name="festivalId" value="@Model.Id" />
+                                                                    <button type="submit" class="btn btn-danger btn-sm">Verwijder</button>
+                                                                </form>
+
+                                                                <a asp-action="Details" asp-route-id="@Model.Id" asp-route-editCommentId="@comment.Id" class="btn btn-warning btn-sm">Bewerk</a>
+                                                            </div>
+                                                        }
+                                                    }
+                                                </li>
+                                            }
+                                        </ul>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-muted">Nog geen reacties op deze review.</p>
+                                    }
+
+                                    <!-- Add Comment Form -->
+                                    @if (currentUserId != null)
+                                    {
+                                        <form asp-action="AddComment" method="post" class="mt-3">
+                                            <input type="hidden" name="reviewId" value="@review.Id" />
+                                            <input type="hidden" name="festivalId" value="@Model.Id" />
+                                            <div class="mb-2">
+                                                <textarea name="content" class="form-control" rows="2" placeholder="Schrijf een reactie..." required></textarea>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary btn-sm">Reactie plaatsen</button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <p class="mt-2"><a href="/Account/Login">Log in</a> om te reageren.</p>
+                                    }
+                                </div>
                             </div>
                         </div>
                     }
@@ -45,8 +128,8 @@
         }
     </div>
 
-    <!-- Review Form (only visible if user is authenticated via session) -->
-    @if (Context.Session.GetInt32("UserId") != null)
+    <!-- Review Form -->
+    @if (currentUserId != null)
     {
         <div class="mt-5">
             <h4 class="text-center mb-4 text-dark">Laat een review achter</h4>
@@ -79,32 +162,18 @@
     }
 </div>
 
-<!-- Custom CSS -->
+<!-- Styles -->
 <style>
-    body {
-        font-family: 'Roboto', sans-serif;
-        background-color: #f8f9fa;
-    }
-
     .card {
         background-color: #ffffff;
         border-radius: 0.5rem;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
-    .card-body {
-        padding: 1.5rem;
-    }
-
     .card-title {
         font-size: 1.25rem;
         color: #343a40;
         font-weight: bold;
-    }
-
-    .review-form textarea {
-        resize: vertical;
-        min-height: 150px;
     }
 
     .form-label {
@@ -127,51 +196,21 @@
             border-color: #1e7e34;
         }
 
-    .btn-link {
-        color: #007bff;
-    }
-
-        .btn-link:hover {
-            color: #0056b3;
-            text-decoration: underline;
-        }
-
-    .shadow-sm {
-        box-shadow: 0 .5rem 1rem rgba(0, 0, 0, 0.15);
-    }
-
-    .rounded-3 {
-        border-radius: 1rem;
-    }
-
     .btn-login {
         display: inline-block;
         padding: 10px 20px;
         font-size: 1.1rem;
         font-weight: 600;
-        text-align: center;
-        text-decoration: none;
         background-color: #007bff;
         color: white;
         border-radius: 25px;
+        text-decoration: none;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
     }
 
         .btn-login:hover {
             background-color: #0056b3;
-            color: white;
             text-decoration: none;
-            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .btn-login:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);
-        }
-
-        .btn-login:active {
-            background-color: #004085;
-            box-shadow: none;
+            color: white;
         }
 </style>
