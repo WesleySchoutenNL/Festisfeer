@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35521.163 d17.12
+VisualStudioVersion = 17.12.35521.163
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Festisfeer.Presentation", "Festisfeer.Presentation\Festisfeer.Presentation.csproj", "{A9B7E5FE-12D0-4AD9-92D6-E4CC023A110E}"
 EndProject
@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extensions", "Extensions", 
 	ProjectSection(SolutionItems) = preProject
 		SessionExtensions.cs = SessionExtensions.cs
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Festisfeer.Testlayer", "Testlayer\Festisfeer.Testlayer.csproj", "{6AC44AFC-2E1F-4EDC-BAD5-FF83B0599B21}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,6 +34,10 @@ Global
 		{25025A77-7E27-40A2-BB8A-61B63F4AFDC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{25025A77-7E27-40A2-BB8A-61B63F4AFDC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{25025A77-7E27-40A2-BB8A-61B63F4AFDC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AC44AFC-2E1F-4EDC-BAD5-FF83B0599B21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AC44AFC-2E1F-4EDC-BAD5-FF83B0599B21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AC44AFC-2E1F-4EDC-BAD5-FF83B0599B21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AC44AFC-2E1F-4EDC-BAD5-FF83B0599B21}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
