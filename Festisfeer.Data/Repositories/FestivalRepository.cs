@@ -25,7 +25,13 @@ namespace Festisfeer.Data.Repositories
                 using (MySqlConnection conn = new MySqlConnection(_connectionString))
                 {
                     conn.Open();
-                    var query = "SELECT * FROM festival ORDER BY start_datetime ASC";
+
+                    var query = @"
+                SELECT 
+                    id, name, location, start_datetime, end_datetime, genre, ticket_price, image_url 
+                FROM 
+                    festival 
+                LIMIT 12";
 
                     using (MySqlCommand cmd = new MySqlCommand(query, conn))
                     {
@@ -37,7 +43,7 @@ namespace Festisfeer.Data.Repositories
                                 {
                                     Id = reader.GetInt32("id"),
                                     Name = reader.GetString("name"),
-                                    Location = reader.GetString("lsocation"),
+                                    Location = reader.GetString("location"), 
                                     StartDateTime = reader.GetDateTime("start_datetime"),
                                     EndDateTime = reader.GetDateTime("end_datetime"),
                                     Genre = reader.GetString("genre"),
@@ -53,10 +59,10 @@ namespace Festisfeer.Data.Repositories
             {
                 throw new Exception($"Databasefout bij ophalen van festivals: {ex.Message}", ex);
             }
-            catch (Exception ex)
-            {
-                throw new Exception($"Onverwachte fout bij ophalen van festivals: {ex.Message}", ex);
-            }
+            //catch (Exception ex)
+            //{
+            //    throw new Exception($"Onverwachte fout bij ophalen van festivals: {ex.Message}", ex);
+            //}
 
             return festivals;
         }
@@ -136,10 +142,10 @@ namespace Festisfeer.Data.Repositories
             {
                 throw new Exception($"Databasefout bij toevoegen van festival '{festival.Name}': {ex.Message}", ex);
             }
-            catch (Exception ex)
-            {
-                throw new Exception($"Onverwachte fout bij toevoegen van festival '{festival.Name}': {ex.Message}", ex);
-            }
+            //catch (Exception ex)
+            //{
+            //    throw new Exception($"Onverwachte fout bij toevoegen van festival '{festival.Name}': {ex.Message}", ex);
+            //}
         }
     }
 }
