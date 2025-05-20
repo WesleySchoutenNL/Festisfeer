@@ -85,10 +85,10 @@ namespace Festisfeer.Testlayer
                 TicketPrice = 100
             };
 
-            // Act & Assert (opgesplitst)
+            // Act
             var ex = Assert.ThrowsException<ArgumentException>(() => _festivalService.AddFestival(festival));
 
-            // Assert (verder inhoud van de exception controleren)
+            // Assert
             Assert.AreEqual("De einddatum mag niet eerder zijn dan de startdatum.", ex.Message);
         }
 
@@ -105,16 +105,11 @@ namespace Festisfeer.Testlayer
                 TicketPrice = 50
             };
 
-            // Act & Assert
-            try
-            {
-                _festivalService.AddFestival(festival);
-                Assert.Fail("Er werd geen exception gegooid terwijl dat wel verwacht werd.");
-            }
-            catch (ArgumentException ex)
-            {
-                Assert.AreEqual("De naam van het festival mag niet leeg zijn.", ex.Message);
-            }
+            // Act
+            var ex = Assert.ThrowsException<ArgumentException>(() => _festivalService.AddFestival(festival));
+
+            // Assert
+            Assert.AreEqual("De naam van het festival mag niet leeg zijn.", ex.Message);
         }
 
         [TestMethod]
@@ -124,22 +119,17 @@ namespace Festisfeer.Testlayer
             var festival = new Festival
             {
                 Name = "Intents",
-                Location = "", // Ongeldig
+                Location = "",
                 StartDateTime = DateTime.Now,
                 EndDateTime = DateTime.Now.AddDays(1),
                 TicketPrice = 50
             };
 
-            // Act & Assert
-            try
-            {
-                _festivalService.AddFestival(festival);
-                Assert.Fail("Er werd geen exception gegooid terwijl dat wel verwacht werd.");
-            }
-            catch (ArgumentException ex)
-            {
-                Assert.AreEqual("De locatie van het festival mag niet leeg zijn.", ex.Message);
-            }
+            // Act
+            var ex = Assert.ThrowsException<ArgumentException>(() => _festivalService.AddFestival(festival));
+
+            // Assert
+            Assert.AreEqual("De locatie van het festival mag niet leeg zijn.", ex.Message);
         }
 
         [TestMethod]
@@ -155,16 +145,11 @@ namespace Festisfeer.Testlayer
                 TicketPrice = -10
             };
 
-            // Act & Assert
-            try
-            {
-                _festivalService.AddFestival(festival);
-                Assert.Fail("Er werd geen exception gegooid terwijl dat wel verwacht werd.");
-            }
-            catch (ArgumentException ex)
-            {
-                Assert.AreEqual("De ticketprijs mag niet negatief zijn.", ex.Message);
-            }
+            // Act
+            var ex = Assert.ThrowsException<ArgumentException>(() => _festivalService.AddFestival(festival));
+
+            // Assert
+            Assert.AreEqual("De ticketprijs mag niet negatief zijn.", ex.Message);
         }
 
         [TestMethod]
@@ -187,16 +172,11 @@ namespace Festisfeer.Testlayer
 
             _festivalRepositoryMock.Setup(repo => repo.GetFestivals()).Returns(existingFestivals);
 
-            // Act & Assert
-            try
-            {
-                _festivalService.AddFestival(newFestival);
-                Assert.Fail("Er werd geen exception gegooid terwijl dat wel verwacht werd.");
-            }
-            catch (InvalidOperationException ex)
-            {
-                Assert.AreEqual("Een festival met dezelfde naam op die datum bestaat al.", ex.Message);
-            }
+            // Act
+            var ex = Assert.ThrowsException<InvalidOperationException>(() => _festivalService.AddFestival(newFestival));
+
+            // Assert
+            Assert.AreEqual("Een festival met dezelfde naam op die datum bestaat al.", ex.Message);
         }
 
 

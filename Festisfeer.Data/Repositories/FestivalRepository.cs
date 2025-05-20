@@ -3,6 +3,8 @@ using Festisfeer.Domain.Models;
 using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using Festisfeer.Domain.Interfaces;
+using Festisfeer.Domain.Exceptions; 
+
 using System;
 
 namespace Festisfeer.Data.Repositories
@@ -10,7 +12,6 @@ namespace Festisfeer.Data.Repositories
     public class FestivalRepository : IFestivalRepository
     {
         private readonly string _connectionString;
-
         public FestivalRepository(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
@@ -57,12 +58,8 @@ namespace Festisfeer.Data.Repositories
             }
             catch (MySqlException ex)
             {
-                throw new Exception($"Databasefout bij ophalen van festivals: {ex.Message}", ex);
+                throw new FestivalRepositoryException($"Databasefout bij ophalen van festivals: {ex.Message}", ex);
             }
-            //catch (Exception ex)
-            //{
-            //    throw new Exception($"Onverwachte fout bij ophalen van festivals: {ex.Message}", ex);
-            //}
 
             return festivals;
         }
@@ -104,11 +101,11 @@ namespace Festisfeer.Data.Repositories
             }
             catch (MySqlException ex)
             {
-                throw new Exception($"Databasefout bij ophalen van festival met ID {id}: {ex.Message}", ex);
+                throw new FestivalRepositoryException($"Databasefout bij ophalen van festival met ID {id}: {ex.Message}", ex);
             }
             catch (Exception ex)
             {
-                throw new Exception($"Onverwachte fout bij ophalen van festival met ID {id}: {ex.Message}", ex);
+                throw new FestivalRepositoryException($"Onverwachte fout bij ophalen van festival met ID {id}: {ex.Message}", ex);
             }
 
             return festival;
@@ -140,12 +137,8 @@ namespace Festisfeer.Data.Repositories
             }
             catch (MySqlException ex)
             {
-                throw new Exception($"Databasefout bij toevoegen van festival '{festival.Name}': {ex.Message}", ex);
+                throw new FestivalRepositoryException($"Databasefout bij toevoegen van festival '{festival.Name}': {ex.Message}", ex);
             }
-            //catch (Exception ex)
-            //{
-            //    throw new Exception($"Onverwachte fout bij toevoegen van festival '{festival.Name}': {ex.Message}", ex);
-            //}
         }
     }
 }

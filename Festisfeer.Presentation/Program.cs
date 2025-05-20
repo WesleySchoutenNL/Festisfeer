@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Session;  // Zorg ervoor dat deze namespace wordt geïmporteerd
 
 var builder = WebApplication.CreateBuilder(args);
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
 
 // Voeg session services toe
 builder.Services.AddSession(options =>
@@ -14,7 +16,9 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-// Voeg services toe aan de container
+
+
+// Voeg services toe aan de container   
 builder.Services.AddControllersWithViews();
 
 // Registratie van je repositories via de interfaces
