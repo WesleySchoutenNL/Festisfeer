@@ -6,6 +6,7 @@ using Festisfeer.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Festisfeer.Domain.Exceptions;
 
 namespace Festisfeer.Testlayer
 {
@@ -26,10 +27,10 @@ namespace Festisfeer.Testlayer
         public void GetFestivals_ReturnsCorrectList()
         {
             var festivals = new List<Festival>
-            {
-                new Festival(1, "Rock Werchter", "Werchter", DateTime.Now, DateTime.Now.AddDays(1), "Rock", 120, "img1.jpg"),
-                new Festival(2, "Graspop", "Dessel", DateTime.Now, DateTime.Now.AddDays(2), "Metal", 140, "img2.jpg")
-            };
+                {
+                    new Festival(1, "Rock Werchter", "Werchter", DateTime.Now, DateTime.Now.AddDays(1), "Rock", 120, "img1.jpg"),
+                    new Festival(2, "Graspop", "Dessel", DateTime.Now, DateTime.Now.AddDays(2), "Metal", 140, "img2.jpg")
+                };
 
             _festivalRepositoryMock.Setup(repo => repo.GetFestivals()).Returns(festivals);
 
@@ -40,8 +41,25 @@ namespace Festisfeer.Testlayer
             Assert.AreEqual("Graspop", result[1].Name);
         }
 
+        public void GetFestivals_ReturnCorrectListFail()
+        {
+            // Arrange
+            var repoException = new FestivalRepositoryException("Database error", new Exception());
+            _festivalRepositoryMock
+                .Setup(repo => repo.GetFestivals())
+                .Throws(repoException);
+
+            // Act
+            var ex = Assert.ThrowsException<FestivalServiceException>(() => _festivalService.GetFestivals());
+
+            // Assert
+            Assert.IsNotNull(ex);
+            Assert.AreEqual("Fout bij ophalen van festivals via de service.", ex.Message);
+            Assert.AreSame(repoException, ex.InnerException);
+        }
+
         [TestMethod]
-        public void GetFestivalById_Test()
+        public void GetFestivalById_TestSucces()
         {
             var expectedFestival = new Festival(
                 1, "Defqon", "Biddinghuizen", DateTime.Now, DateTime.Now.AddDays(1), "Hardstyle", 150, "defqon.jpg"
@@ -56,11 +74,30 @@ namespace Festisfeer.Testlayer
         }
 
         [TestMethod]
+        public void GetFestivalById_Catch()
+        {
+            // Arrange
+            int festivalId = 42;
+            var repoException = new FestivalRepositoryException("Database error", new Exception());
+            _festivalRepositoryMock
+                .Setup(repo => repo.GetFestivalById(festivalId))
+                .Throws(repoException);
+
+            // Act
+            var ex = Assert.ThrowsException<FestivalServiceException>(() => _festivalService.GetFestivalById(festivalId));
+
+            // Assert
+            Assert.IsNotNull(ex);
+            Assert.AreEqual($"Fout bij ophalen van festival met ID {festivalId} via service.", ex.Message);
+            Assert.AreSame(repoException, ex.InnerException);
+        }
+
+        [TestMethod]
         public void AddFestival_StartDateLaterThanEndDateTest()
         {
             var festival = new Festival(0, "Testfest", "Antwerpen", DateTime.Now.AddDays(2), DateTime.Now, "EDM", 100, null);
 
-            var ex = Assert.ThrowsException<ArgumentException>(() => _festivalService.AddFestival(festival));
+            var ex = Assert.ThrowsException<InvalidFestivalDataException>(() => _festivalService.AddFestival(festival));
             Assert.AreEqual("De einddatum mag niet eerder zijn dan de startdatum.", ex.Message);
         }
 
@@ -69,7 +106,7 @@ namespace Festisfeer.Testlayer
         {
             var festival = new Festival(0, "", "Biddinghuizen", DateTime.Now, DateTime.Now.AddDays(1), "EDM", 50, null);
 
-            var ex = Assert.ThrowsException<ArgumentException>(() => _festivalService.AddFestival(festival));
+            var ex = Assert.ThrowsException<InvalidFestivalDataException>(() => _festivalService.AddFestival(festival));
             Assert.AreEqual("De naam van het festival mag niet leeg zijn.", ex.Message);
         }
 
@@ -78,7 +115,7 @@ namespace Festisfeer.Testlayer
         {
             var festival = new Festival(0, "Intents", "", DateTime.Now, DateTime.Now.AddDays(1), "Hardstyle", 50, null);
 
-            var ex = Assert.ThrowsException<ArgumentException>(() => _festivalService.AddFestival(festival));
+            var ex = Assert.ThrowsException<InvalidFestivalDataException>(() => _festivalService.AddFestival(festival));
             Assert.AreEqual("De locatie van het festival mag niet leeg zijn.", ex.Message);
         }
 
@@ -87,7 +124,7 @@ namespace Festisfeer.Testlayer
         {
             var festival = new Festival(0, "EDC", "Las Vegas", DateTime.Now, DateTime.Now.AddDays(1), "EDM", -10, null);
 
-            var ex = Assert.ThrowsException<ArgumentException>(() => _festivalService.AddFestival(festival));
+            var ex = Assert.ThrowsException<InvalidFestivalDataException>(() => _festivalService.AddFestival(festival));
             Assert.AreEqual("De ticketprijs mag niet negatief zijn.", ex.Message);
         }
 
@@ -97,13 +134,13 @@ namespace Festisfeer.Testlayer
             var newFestival = new Festival(0, "Tomorrowland", "Boom", new DateTime(2025, 7, 20), new DateTime(2025, 7, 22), "Dance", 200, null);
 
             var existingFestivals = new List<Festival>
-            {
-                new Festival(5, "Tomorrowland", "Boom", new DateTime(2025, 7, 20), new DateTime(2025, 7, 22), "Dance", 200, null)
-            };
+                {
+                    new Festival(5, "Tomorrowland", "Boom", new DateTime(2025, 7, 20), new DateTime(2025, 7, 22), "Dance", 200, null)
+                };
 
             _festivalRepositoryMock.Setup(repo => repo.GetFestivals()).Returns(existingFestivals);
 
-            var ex = Assert.ThrowsException<InvalidOperationException>(() => _festivalService.AddFestival(newFestival));
+            var ex = Assert.ThrowsException<DuplicateFestivalException>(() => _festivalService.AddFestival(newFestival));
             Assert.AreEqual("Een festival met dezelfde naam op die datum bestaat al.", ex.Message);
         }
 

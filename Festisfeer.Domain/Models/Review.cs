@@ -1,27 +1,45 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Festisfeer.Domain.Models
+﻿namespace Festisfeer.Domain.Models
 {
     public class Review
     {
-        public int Id { get; set; }
-        public string? Content { get; set; }
-        public int Rating { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public int Id { get; private set; }
+        public string? Content { get; private set; }
+        public int Rating { get; private set; }
+        public DateTime CreatedAt { get; private set; }
 
         // Relatie met festival
-        public int FestivalId { get; set; }
-        public Festival? Festival { get; set; }
+        public int FestivalId { get; private set; }
+        public Festival? Festival { get; private set; }
 
         // Relatie met gebruiker
-        public int UserId { get; set; }
-        public User User { get; set; } // Gebruiker die de review heeft geplaatst
+        public int UserId { get; private set; }
+        public User User { get; private set; } // Gebruiker die de review heeft geplaatst
 
         // Extra property voor gebruikersnaam
-        public string? UserName { get; set; }
+        public string? UserName { get; private set; }
+
+        public Review(int id, string content, int rating, DateTime createdAt, int festivalId, int userId, string userName)
+        {
+            Id = id;
+            Content = content;
+            Rating = rating;
+            CreatedAt = createdAt;
+            FestivalId = festivalId;
+            UserId = userId;
+            UserName = userName;
+        }
+
+
+        // Optioneel: constructor zonder Id (bijvoorbeeld voor nieuwe reviews)
+        public Review(string? content, int rating, DateTime createdAt,
+                      int festivalId, int userId, string? userName)
+        {
+            Content = content;
+            Rating = rating;
+            CreatedAt = createdAt;
+            FestivalId = festivalId;
+            UserId = userId;
+            UserName = userName;
+        }
     }
 }

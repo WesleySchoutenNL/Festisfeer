@@ -104,27 +104,25 @@ namespace Festisfeer.Presentation.Controllers
 
         // Review toevoegen aan een festival
         [HttpPost]
-        public IActionResult AddReview(int festivalId, string content, int rating)
+        public IActionResult AddReview(ReviewInputModel input)
         {
-            // Kijk of de gebruiker is ingelogd via sessie
             var userId = HttpContext.Session.GetInt32("UserId");
-            //if (userId == null)
-            //    return RedirectToAction("Login", "Account"); // Niet ingelogd? Doorsturen naar login
+            if (userId == null)
+                return RedirectToAction("Login", "Account");
 
-            // Maak een nieuwe review aan
-            var review = new Review
-            {
-                FestivalId = festivalId,
-                UserId = userId.Value,
-                Content = content,
-                Rating = rating,
-                CreatedAt = DateTime.Now
-            };
+            var review = new Review(
+                id: 0,
+                content: input.Content,
+                rating: input.Rating,
+                createdAt: DateTime.Now,
+                festivalId: input.FestivalId,
+                userId: userId.Value,
+                userName: null
+            );
 
-            // Sla review op via de service
             _reviewService.AddReview(review);
 
-            return RedirectToAction("Details", new { id = festivalId });
+            return RedirectToAction("Details", new { id = input.FestivalId });
         }
 
         // Reactie toevoegen aan een review
@@ -132,8 +130,6 @@ namespace Festisfeer.Presentation.Controllers
         public IActionResult AddComment(int reviewId, int festivalId, string content)
         {
             var userId = HttpContext.Session.GetInt32("UserId");
-            //if (userId == null)
-            //    return RedirectToAction("Login", "Account");
 
             // Nieuwe comment aanmaken
             var comment = new Comment
