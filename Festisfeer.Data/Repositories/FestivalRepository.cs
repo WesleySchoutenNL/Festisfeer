@@ -3,7 +3,7 @@ using Festisfeer.Domain.Models;
 using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using Festisfeer.Domain.Interfaces;
-using Festisfeer.Domain.Exceptions; 
+using Festisfeer.Domain.Exceptions;
 
 using System;
 
@@ -40,17 +40,16 @@ namespace Festisfeer.Data.Repositories
                         {
                             while (reader.Read())
                             {
-                                festivals.Add(new Festival
-                                {
-                                    Id = reader.GetInt32("id"),
-                                    Name = reader.GetString("name"),
-                                    Location = reader.GetString("location"), 
-                                    StartDateTime = reader.GetDateTime("start_datetime"),
-                                    EndDateTime = reader.GetDateTime("end_datetime"),
-                                    Genre = reader.GetString("genre"),
-                                    TicketPrice = reader.GetInt32("ticket_price"),
-                                    FestivalImg = reader.GetString("image_url")
-                                });
+                                festivals.Add(new Festival(
+                                    reader.GetInt32("id"),
+                                    reader.GetString("name"),
+                                    reader.GetString("location"),
+                                    reader.GetDateTime("start_datetime"),
+                                    reader.GetDateTime("end_datetime"),
+                                    reader.GetString("genre"),
+                                    reader.GetInt32("ticket_price"),
+                                    reader.GetString("image_url")
+                                ));
                             }
                         }
                     }
@@ -83,17 +82,16 @@ namespace Festisfeer.Data.Repositories
                         {
                             if (reader.Read())
                             {
-                                festival = new Festival
-                                {
-                                    Id = reader.GetInt32("id"),
-                                    Name = reader.GetString("name"),
-                                    Location = reader.GetString("location"),
-                                    StartDateTime = reader.GetDateTime("start_datetime"),
-                                    EndDateTime = reader.GetDateTime("end_datetime"),
-                                    Genre = reader.GetString("genre"),
-                                    TicketPrice = reader.GetInt32("ticket_price"),
-                                    FestivalImg = reader.GetString("image_url")
-                                };
+                                festival = new Festival(
+                                    reader.GetInt32("id"),
+                                    reader.GetString("name"),
+                                    reader.GetString("location"),
+                                    reader.GetDateTime("start_datetime"),
+                                    reader.GetDateTime("end_datetime"),
+                                    reader.GetString("genre"),
+                                    reader.GetInt32("ticket_price"),
+                                    reader.GetString("image_url")
+                                );
                             }
                         }
                     }

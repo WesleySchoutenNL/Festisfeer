@@ -12,7 +12,7 @@
         public string? TicketPriceFormatted { get; set; }  // Geformatteerde ticketprijs
 
         // Toegevoegde informatie over de reviews
-        public List<ReviewViewModel> Reviews { get; set; } // Lijst van reviews
+        public List<ReviewViewModel> Reviews { get; set; } // Lijst van reviews     
     }
 
     // Nieuw ViewModel voor de review

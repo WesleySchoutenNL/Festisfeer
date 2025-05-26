@@ -18,7 +18,6 @@ namespace Festisfeer.Testlayer
         [TestInitialize]
         public void Setup()
         {
-            // Arrange: Maak een mock van de repository
             _festivalRepositoryMock = new Mock<IFestivalRepository>();
             _festivalService = new FestivalService(_festivalRepositoryMock.Object);
         }
@@ -26,19 +25,16 @@ namespace Festisfeer.Testlayer
         [TestMethod]
         public void GetFestivals_ReturnsCorrectList()
         {
-            // Arrange
             var festivals = new List<Festival>
             {
-                new Festival { Id = 1, Name = "Rock Werchter" },
-                new Festival { Id = 2, Name = "Graspop" }
+                new Festival(1, "Rock Werchter", "Werchter", DateTime.Now, DateTime.Now.AddDays(1), "Rock", 120, "img1.jpg"),
+                new Festival(2, "Graspop", "Dessel", DateTime.Now, DateTime.Now.AddDays(2), "Metal", 140, "img2.jpg")
             };
 
             _festivalRepositoryMock.Setup(repo => repo.GetFestivals()).Returns(festivals);
 
-            // Act
             var result = _festivalService.GetFestivals();
 
-            // Assert
             Assert.AreEqual(2, result.Count);
             Assert.AreEqual("Rock Werchter", result[0].Name);
             Assert.AreEqual("Graspop", result[1].Name);
@@ -47,159 +43,79 @@ namespace Festisfeer.Testlayer
         [TestMethod]
         public void GetFestivalById_Test()
         {
-            // Arrange
-            var expectedFestival = new Festival
-            {
-                Id = 1,
-                Name = "Defqon",
-                Location = "Biddinghuizen",
-                StartDateTime = DateTime.Now,
-                EndDateTime = DateTime.Now.AddDays(1),
-                Genre = "Hardstyle",
-                TicketPrice = 150,
-                FestivalImg = "defqon.jpg"
-            };
+            var expectedFestival = new Festival(
+                1, "Defqon", "Biddinghuizen", DateTime.Now, DateTime.Now.AddDays(1), "Hardstyle", 150, "defqon.jpg"
+            );
 
             _festivalRepositoryMock.Setup(repo => repo.GetFestivalById(1)).Returns(expectedFestival);
-            //Act
+
             var result = _festivalService.GetFestivalById(1);
-            //Assert
+
             Assert.IsNotNull(result);
             Assert.AreEqual(expectedFestival.Id, result.Id);
-            //Assert.AreEqual(expectedFestival.Name, result.Name);
-            //Assert.AreEqual(expectedFestival.Location, result.Location);
-
         }
-
 
         [TestMethod]
         public void AddFestival_StartDateLaterThanEndDateTest()
         {
-            // Arrange
-            var festival = new Festival
-            {
-                Name = "Testfest",
-                Location = "Antwerpen",
-                StartDateTime = DateTime.Now.AddDays(2),
-                EndDateTime = DateTime.Now,
-                TicketPrice = 100
-            };
+            var festival = new Festival(0, "Testfest", "Antwerpen", DateTime.Now.AddDays(2), DateTime.Now, "EDM", 100, null);
 
-            // Act
             var ex = Assert.ThrowsException<ArgumentException>(() => _festivalService.AddFestival(festival));
-
-            // Assert
             Assert.AreEqual("De einddatum mag niet eerder zijn dan de startdatum.", ex.Message);
         }
 
         [TestMethod]
         public void AddFestival_NameEmptyTest()
         {
-            // Arrange
-            var festival = new Festival
-            {
-                Name = "",
-                Location = "Biddingshuizen",
-                StartDateTime = DateTime.Now,
-                EndDateTime = DateTime.Now.AddDays(1),
-                TicketPrice = 50
-            };
+            var festival = new Festival(0, "", "Biddinghuizen", DateTime.Now, DateTime.Now.AddDays(1), "EDM", 50, null);
 
-            // Act
             var ex = Assert.ThrowsException<ArgumentException>(() => _festivalService.AddFestival(festival));
-
-            // Assert
             Assert.AreEqual("De naam van het festival mag niet leeg zijn.", ex.Message);
         }
 
         [TestMethod]
         public void AddFestival_LocationEmptyTest()
         {
-            // Arrange
-            var festival = new Festival
-            {
-                Name = "Intents",
-                Location = "",
-                StartDateTime = DateTime.Now,
-                EndDateTime = DateTime.Now.AddDays(1),
-                TicketPrice = 50
-            };
+            var festival = new Festival(0, "Intents", "", DateTime.Now, DateTime.Now.AddDays(1), "Hardstyle", 50, null);
 
-            // Act
             var ex = Assert.ThrowsException<ArgumentException>(() => _festivalService.AddFestival(festival));
-
-            // Assert
             Assert.AreEqual("De locatie van het festival mag niet leeg zijn.", ex.Message);
         }
 
         [TestMethod]
         public void AddFestival_NegativeTicketPriceTest()
         {
-            // Arrange
-            var festival = new Festival
-            {
-                Name = "EDC",
-                Location = "Las Vegas",
-                StartDateTime = DateTime.Now,
-                EndDateTime = DateTime.Now.AddDays(1),
-                TicketPrice = -10
-            };
+            var festival = new Festival(0, "EDC", "Las Vegas", DateTime.Now, DateTime.Now.AddDays(1), "EDM", -10, null);
 
-            // Act
             var ex = Assert.ThrowsException<ArgumentException>(() => _festivalService.AddFestival(festival));
-
-            // Assert
             Assert.AreEqual("De ticketprijs mag niet negatief zijn.", ex.Message);
         }
 
         [TestMethod]
         public void AddFestival_DuplicateFestivalTest()
         {
-            // Arrange
-            var newFestival = new Festival
-            {
-                Name = "Tomorrowland",
-                StartDateTime = new DateTime(2025, 7, 20),
-                Location = "Boom",
-                EndDateTime = new DateTime(2025, 7, 22),
-                TicketPrice = 200
-            };
+            var newFestival = new Festival(0, "Tomorrowland", "Boom", new DateTime(2025, 7, 20), new DateTime(2025, 7, 22), "Dance", 200, null);
 
             var existingFestivals = new List<Festival>
             {
-                new Festival { Name = "Tomorrowland", StartDateTime = new DateTime(2025, 7, 20) }
+                new Festival(5, "Tomorrowland", "Boom", new DateTime(2025, 7, 20), new DateTime(2025, 7, 22), "Dance", 200, null)
             };
 
             _festivalRepositoryMock.Setup(repo => repo.GetFestivals()).Returns(existingFestivals);
 
-            // Act
             var ex = Assert.ThrowsException<InvalidOperationException>(() => _festivalService.AddFestival(newFestival));
-
-            // Assert
             Assert.AreEqual("Een festival met dezelfde naam op die datum bestaat al.", ex.Message);
         }
-
-
 
         [TestMethod]
         public void AddFestival_ValidFestivalTest()
         {
-            // Arrange
-            var festival = new Festival
-            {
-                Name = "Defqon",
-                Location = "Brussel",
-                StartDateTime = DateTime.Now,
-                EndDateTime = DateTime.Now.AddDays(1),
-                TicketPrice = 100
-            };
+            var festival = new Festival(0, "Defqon", "Brussel", DateTime.Now, DateTime.Now.AddDays(1), "Hardstyle", 100, null);
 
-            _festivalRepositoryMock.Setup(repo => repo.GetFestivals()).Returns(new List<Festival>()); // geen duplicaten
+            _festivalRepositoryMock.Setup(repo => repo.GetFestivals()).Returns(new List<Festival>());
 
-            // Act
             _festivalService.AddFestival(festival);
 
-            // Assert: controleer of AddFestival op de repository werd aangeroepen met het juiste festival
             _festivalRepositoryMock.Verify(repo => repo.AddFestival(festival), Times.Once);
         }
     }

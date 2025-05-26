@@ -6,6 +6,10 @@ using Microsoft.AspNetCore.Http;
 using Festisfeer.Presentation.ViewModels;
 using System.IO;
 using System.Linq;
+using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
+using System.Xml.Linq;
+using Festisfeer.Presentation.InputModels; // Voeg toe voor inputmodel
+
 
 namespace Festisfeer.Presentation.Controllers
 {
@@ -200,32 +204,50 @@ namespace Festisfeer.Presentation.Controllers
             if (userRole != "beheerder")
                 return RedirectToAction("Index", "Home");
 
-            return View(new Festival());
+            return View(new FestivalInputModel());
         }
+
 
         // Voeg nieuw festival toe inclusief optionele afbeelding
         [HttpPost]
-        public IActionResult Add(Festival festival, IFormFile festivalImg)
+        public IActionResult Add(FestivalInputModel festivalInput, IFormFile festivalImg)
         {
-            // Als model niet geldig is, keer terug naar formulier
             if (!ModelState.IsValid)
-                return View(festival);
+                return View(festivalInput);
+
+            string? imgPath = null;
 
             if (festivalImg != null)
             {
-                // Bepaal opslagpad en kopieer bestand naar wwwroot/images/
-                var filePath = Path.Combine(_hostEnvironment.WebRootPath, "images", festivalImg.FileName);
+                // Opslaan in wwwroot/images/
+                var uploadsFolder = Path.Combine(_hostEnvironment.WebRootPath, "images");
+                var fileName = Path.GetFileName(festivalImg.FileName);
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
                     festivalImg.CopyTo(fileStream);
                 }
 
-                // Zet bestandsnaam in festival object (zodat het op de site getoond kan worden)
-                festival.FestivalImg = "/images/" + festivalImg.FileName;
+                imgPath = "/images/" + fileName;
             }
 
-            // Voeg festival toe via de service
+            // Maak het Festival-object volledig aan via constructor (encapsulated)
+            var festival = new Festival(
+                id: festivalInput.Id,
+                name: festivalInput.Name,
+                location: festivalInput.Location,
+                ticketPrice: festivalInput.TicketPrice,
+                startDateTime: festivalInput.StartDateTime,
+                endDateTime: festivalInput.EndDateTime,
+                genre: festivalInput.Genre,
+                festivalImg: imgPath
+
+            );
+
+            // Laat de service validatie en opslag doen
             _festivalService.AddFestival(festival);
+
             return RedirectToAction("Index");
         }
     }

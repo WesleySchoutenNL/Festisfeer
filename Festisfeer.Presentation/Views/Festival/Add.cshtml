@@ -1,10 +1,22 @@
-﻿@model Festisfeer.Domain.Models.Festival
+﻿@model Festisfeer.Presentation.InputModels.FestivalInputModel
 
 <h2 class="text-center mb-4">Voeg een festival toe</h2>
 
 <div class="container">
     <form method="post" enctype="multipart/form-data" class="card shadow p-4 mx-auto" style="max-width: 500px;">
-        
+        @* Toon validatiefouten bovenin *@
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <li>@error.ErrorMessage</li>
+                    }
+                </ul>
+            </div>
+        }
+
         <div class="mb-3">
             <label for="Name" class="form-label">Festival Naam</label>
             <input type="text" id="Name" name="Name" value="@Model?.Name" class="form-control" required />
@@ -17,37 +29,36 @@
 
         <div class="mb-3">
             <label for="StartDateTime" class="form-label">Startdatum en tijd</label>
-            <input type="datetime-local" id="StartDateTime" name="StartDateTime" 
-                   value="@Model?.StartDateTime.ToString("yyyy-MM-ddTHH:mm") ?? DateTime.Now.ToString("yyyy-MM-ddTHH:mm")"
+            <input type="datetime-local" id="StartDateTime" name="StartDateTime"
+                   value="@(Model?.StartDateTime.ToString("yyyy-MM-ddTHH:mm") ?? DateTime.Now.ToString("yyyy-MM-ddTHH:mm"))"
                    class="form-control" required />
         </div>
 
         <div class="mb-3">
             <label for="EndDateTime" class="form-label">Einddatum en tijd</label>
-            <input type="datetime-local" id="EndDateTime" name="EndDateTime" 
-                   value="@Model?.EndDateTime.ToString("yyyy-MM-ddTHH:mm") ?? DateTime.Now.ToString("yyyy-MM-ddTHH:mm")"
+            <input type="datetime-local" id="EndDateTime" name="EndDateTime"
+                   value="@(Model?.EndDateTime.ToString("yyyy-MM-ddTHH:mm") ?? DateTime.Now.ToString("yyyy-MM-ddTHH:mm"))"
                    class="form-control" required />
         </div>
 
         <div class="mb-3">
             <label for="Genre" class="form-label">Genre</label>
-            <input type="text" id="Genre" name="Genre" value="@Model?.Genre" class="form-control" required />
+            <input type="text" id="Genre" name="Genre" value="@Model?.Genre" class="form-control" />
         </div>
 
         <div class="mb-3">
             <label for="TicketPrice" class="form-label">Ticketprijs (€)</label>
-            <input type="number" id="TicketPrice" name="TicketPrice" value="@Model?.TicketPrice" 
+            <input type="number" id="TicketPrice" name="TicketPrice" value="@(Model?.TicketPrice ?? 0)"
                    class="form-control" required min="0" step="0.01" />
         </div>
 
         <div class="mb-3">
             <label for="FestivalImg" class="form-label">Festival Afbeelding</label>
-            <input type="file" id="FestivalImg" name="festivalImg" class="form-control" />
+            <input type="file" id="FestivalImg" name="FestivalImg" class="form-control" />
         </div>
 
         <div class="text-center">
             <button type="submit" class="btn btn-primary w-100">Festival Toevoegen</button>
         </div>
-
     </form>
 </div>
