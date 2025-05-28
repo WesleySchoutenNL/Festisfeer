@@ -14,7 +14,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Festisfeer.Data\Festisfeer.Data.csproj" />
     <ProjectReference Include="..\Festisfeer.Domain\Festisfeer.Domain.csproj" />
+    <ProjectReference Include="..\Festisfeer.Presentation\Festisfeer.Presentation.csproj" />
   </ItemGroup>
 
   <ItemGroup>

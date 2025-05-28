@@ -57,15 +57,19 @@ namespace Festisfeer.Data.Repositories
                     {
                         while (reader.Read())
                         {
-                            comments.Add(new Comment
+                            var comment = new Comment(
+                                id: reader.GetInt32("id"),
+                                reviewId: reader.GetInt32("Review_id"),
+                                userId: reader.GetInt32("users_id"),
+                                content: reader.GetString("content"),
+                                createdAt: reader.GetDateTime("created_at")
+                            )
                             {
-                                Id = reader.GetInt32("id"),
-                                ReviewId = reader.GetInt32("Review_id"),
-                                UserId = reader.GetInt32("users_id"),
-                                Content = reader.GetString("content"),
-                                CreatedAt = reader.GetDateTime("created_at"),
                                 UserName = reader.GetString("username")
-                            });
+                            };
+
+                            comments.Add(comment);
+
                         }
                     }
                 }
@@ -92,21 +96,24 @@ namespace Festisfeer.Data.Repositories
                     {
                         if (reader.Read())
                         {
-                            return new Comment
+                            var comment = new Comment(
+                                id: reader.GetInt32("id"),
+                                reviewId: reader.GetInt32("Review_id"),
+                                userId: reader.GetInt32("users_id"),
+                                content: reader.GetString("content"),
+                                createdAt: reader.GetDateTime("created_at")
+                            )
                             {
-                                Id = reader.GetInt32("id"),
-                                ReviewId = reader.GetInt32("Review_id"),
-                                UserId = reader.GetInt32("users_id"),
-                                Content = reader.GetString("content"),
-                                CreatedAt = reader.GetDateTime("created_at"),
                                 UserName = reader.GetString("username")
                             };
+
+                            return comment; // ✅ return het gevonden comment
                         }
                     }
                 }
             }
 
-            return null;
+            return null; // Alleen als er geen comment is gevonden
         }
 
         public void UpdateComment(Comment comment)

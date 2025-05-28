@@ -8,13 +8,29 @@ namespace Festisfeer.Domain.Models
 {
     public class Comment
     {
-        public int Id { get; set; }
-        public int ReviewId { get; set; }
-        public int UserId { get; set; }
-        public string? Content { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public int Id { get; private set; }
+        public int ReviewId { get; private set; }
+        public int UserId { get; private set; }
+        public string? Content { get; private set; }
+        public DateTime CreatedAt { get; private set; }
 
-        // Voor weergave
+        // Alleen voor weergave, mag wel publiek schrijfbaar blijven indien gewenst
         public string? UserName { get; set; }
+
+        // Constructor voor het aanmaken van een comment
+        public Comment(int id, int reviewId, int userId, string? content, DateTime createdAt)
+        {
+            Id = id;
+            ReviewId = reviewId;
+            UserId = userId;
+            Content = content;
+            CreatedAt = createdAt;
+        }
+
+        public void UpdateContent(string newContent)
+        {
+            // eventueel validatie hier
+            Content = newContent;
+        }
     }
 }

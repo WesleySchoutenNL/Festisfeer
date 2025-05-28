@@ -60,9 +60,9 @@
                                                     {
                                                         <!-- Inline edit form -->
                                                         <form asp-action="EditComment" method="post">
-                                                            <input type="hidden" name="commentId" value="@comment.Id" />
-                                                            <input type="hidden" name="festivalId" value="@Model.Id" />
-                                                            <textarea name="content" class="form-control" rows="2">@comment.Content</textarea>
+                                                            <input type="hidden" name="CommentId" value="@comment.Id" />
+                                                            <input type="hidden" name="FestivalId" value="@Model.Id" />
+                                                            <textarea name="Content" class="form-control" rows="2">@comment.Content</textarea>
                                                             <div class="mt-2">
                                                                 <button type="submit" class="btn btn-success btn-sm">Opslaan</button>
                                                                 <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary btn-sm">Annuleren</a>

@@ -73,14 +73,13 @@ namespace Festisfeer.Data.Repositories
 
                 if (isPasswordValid)
                 {
-                    return new User
-                    {
-                        Id = reader.GetInt32("id"),
-                        Email = reader.GetString("email"),
-                        Password = hashedPassword, // Je hoeft het wachtwoord niet op te slaan, dit is ter voorbeeld
-                        Username = reader.GetString("username"),
-                        Role = reader.GetString("role")
-                    };
+                    return new User(
+                        reader.GetInt32("id"),
+                        reader.GetString("email"),
+                        hashedPassword,
+                        reader.GetString("username"),
+                        reader.GetString("role")
+                    );
                 }
             }
 
@@ -100,14 +99,13 @@ namespace Festisfeer.Data.Repositories
             using var reader = cmd.ExecuteReader();
             if (reader.Read())
             {
-                return new User
-                {
-                    Id = reader.GetInt32("id"),
-                    Email = reader.GetString("email"),
-                    Password = reader.GetString("password"),
-                    Username = reader.GetString("username"),
-                    Role = reader.GetString("role")
-                };
+                return new User(
+                    reader.GetInt32("id"),
+                    reader.GetString("email"),
+                    reader.GetString("password"),
+                    reader.GetString("username"),
+                    reader.GetString("role")
+                );
             }
 
             return null;

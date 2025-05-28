@@ -127,46 +127,44 @@ namespace Festisfeer.Presentation.Controllers
 
         // Reactie toevoegen aan een review
         [HttpPost]
-        public IActionResult AddComment(int reviewId, int festivalId, string content)
+        public IActionResult AddComment(CommentInputModel input)
         {
             var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+                return RedirectToAction("Login", "Account");
 
-            // Nieuwe comment aanmaken
-            var comment = new Comment
-            {
-                ReviewId = reviewId,
-                UserId = userId.Value,
-                Content = content,
-                CreatedAt = DateTime.Now
-            };
+            var comment = new Comment(
+                id: 0,
+                reviewId: input.ReviewId,
+                userId: userId.Value,
+                content: input.Content,
+                createdAt: DateTime.Now
+            );
 
             _commentService.AddComment(comment);
-            return RedirectToAction("Details", new { id = festivalId });
+            return RedirectToAction("Details", new { id = input.FestivalId });
         }
 
         // Een bestaande reactie bewerken
         [HttpPost]
-        public IActionResult EditComment(int commentId, int festivalId, string content)
+        
+        public IActionResult EditComment(EditCommentInputModel input)
         {
             var userId = HttpContext.Session.GetInt32("UserId");
-            //if (userId == null)
-            //    return RedirectToAction("Login", "Account");
+            var comment = _commentService.GetCommentById(input.CommentId);
 
-            // Zoek de comment en controleer of die van de juiste gebruiker is
-            var comment = _commentService.GetCommentById(commentId);
             if (comment == null || comment.UserId != userId)
-                return Unauthorized(); // Geen toegang om te bewerken
+                return Unauthorized();
 
-            // Validatie: lege reactie niet toegestaan
-            if (string.IsNullOrWhiteSpace(content))
+            if (string.IsNullOrWhiteSpace(input.Content))
             {
-                return RedirectToAction("Details", new { id = festivalId, editCommentId = commentId });
+                return RedirectToAction("Details", new { id = input.FestivalId, editCommentId = input.CommentId });
             }
 
-            // Update de comment
-            comment.Content = content;
+            comment.UpdateContent(input.Content);
             _commentService.UpdateComment(comment);
-            return RedirectToAction("Details", new { id = festivalId });
+
+            return RedirectToAction("Details", new { id = input.FestivalId });
         }
 
         // Reactie verwijderen

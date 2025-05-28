@@ -23,7 +23,6 @@ namespace Festisfeer.Presentation.Controllers
             return View();
         }
 
-        // Register POST
         [HttpPost]
         public IActionResult Register(RegisterViewModel model)
         {
@@ -31,19 +30,19 @@ namespace Festisfeer.Presentation.Controllers
             {
                 try
                 {
-                    var user = new User
-                    {
-                        Email = model.Email,
-                        Password = model.Password,
-                        Username = model.Username
-                    };
+                    var user = new User(
+                        id: 0, // ID wordt toegekend door de database
+                        email: model.Email,
+                        password: model.Password,
+                        username: model.Username,
+                        role: "Visitor" // standaardrol
+                    );
 
-                    _userRepository.RegisterUser(user);  // Registreer de gebruiker
+                    _userRepository.RegisterUser(user);
                     return RedirectToAction("Login");
                 }
                 catch (Exception ex)
                 {
-                    // Foutmelding toevoegen aan de ModelState als het e-mailadres of de gebruikersnaam al bestaat
                     ModelState.AddModelError(string.Empty, ex.Message);
                 }
             }

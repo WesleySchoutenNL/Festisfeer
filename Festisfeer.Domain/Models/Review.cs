@@ -30,16 +30,5 @@
         }
 
 
-        // Optioneel: constructor zonder Id (bijvoorbeeld voor nieuwe reviews)
-        public Review(string? content, int rating, DateTime createdAt,
-                      int festivalId, int userId, string? userName)
-        {
-            Content = content;
-            Rating = rating;
-            CreatedAt = createdAt;
-            FestivalId = festivalId;
-            UserId = userId;
-            UserName = userName;
-        }
     }
 }
