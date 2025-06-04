@@ -1,6 +1,9 @@
-﻿using Festisfeer.Domain.Interfaces;
+﻿using Festisfeer.Domain.Exceptions;
+using Festisfeer.Domain.Interfaces;
 using Festisfeer.Domain.Models;
+using System;
 using System.Collections.Generic;
+using static Festisfeer.Domain.Exceptions.CommentExceptions;
 
 namespace Festisfeer.Domain.Services
 {
@@ -15,27 +18,63 @@ namespace Festisfeer.Domain.Services
 
         public List<Comment> GetCommentsByReviewId(int reviewId)
         {
-            return _commentRepository.GetCommentsByReviewId(reviewId);
+            try
+            {
+                return _commentRepository.GetCommentsByReviewId(reviewId);
+            }
+            catch (CommentRepositoryException ex)
+            {
+                // Hier kan eventueel logging komen
+                throw new Exception($"Fout bij ophalen van reacties voor review {reviewId}.", ex);
+            }
         }
 
         public void AddComment(Comment comment)
         {
-            _commentRepository.AddComment(comment);
+            try
+            {
+                _commentRepository.AddComment(comment);
+            }
+            catch (CommentRepositoryException ex)
+            {
+                throw new Exception("Fout bij toevoegen van reactie.", ex);
+            }
         }
 
         public Comment GetCommentById(int commentId)
         {
-            return _commentRepository.GetCommentById(commentId);
+            try
+            {
+                return _commentRepository.GetCommentById(commentId);
+            }
+            catch (CommentRepositoryException ex)
+            {
+                throw new Exception($"Fout bij ophalen van reactie met ID {commentId}.", ex);
+            }
         }
 
         public void UpdateComment(Comment comment)
         {
-            _commentRepository.UpdateComment(comment);
+            try
+            {
+                _commentRepository.UpdateComment(comment);
+            }
+            catch (CommentRepositoryException ex)
+            {
+                throw new Exception($"Fout bij bijwerken van reactie met ID {comment.Id}.", ex);
+            }
         }
 
         public void DeleteComment(int commentId)
         {
-            _commentRepository.DeleteComment(commentId);
+            try
+            {
+                _commentRepository.DeleteComment(commentId);
+            }
+            catch (CommentRepositoryException ex)
+            {
+                throw new Exception($"Fout bij verwijderen van reactie met ID {commentId}.", ex);
+            }
         }
     }
 }

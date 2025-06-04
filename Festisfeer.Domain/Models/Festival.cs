@@ -18,10 +18,9 @@ namespace Festisfeer.Domain.Models
         public int TicketPrice { get; private set; }
         public string? FestivalImg { get; private set; }
         
-            public Festival() { }
 
 
-        // Optioneel: constructor om direct een geldig object aan te maken
+        //constructor om direct een geldig object aan te maken
         public Festival(int id, string? name, string? location, DateTime startDateTime, DateTime endDateTime,
                         string? genre, int ticketPrice, string? festivalImg)
         {
@@ -33,11 +32,6 @@ namespace Festisfeer.Domain.Models
             Genre = genre;
             TicketPrice = ticketPrice;
             FestivalImg = festivalImg;
-        }
-
-        public void SetFestivalImg(string path)
-        {
-            FestivalImg = path;
         }
     }
 }

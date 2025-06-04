@@ -32,6 +32,10 @@ namespace Festisfeer.Data.Repositories
                     id, name, location, start_datetime, end_datetime, genre, ticket_price, image_url 
                 FROM 
                     festival 
+                WHERE 
+                    start_datetime > NOW()
+                ORDER BY 
+                    start_datetime ASC
                 LIMIT 12";
 
                     using (MySqlCommand cmd = new MySqlCommand(query, conn))

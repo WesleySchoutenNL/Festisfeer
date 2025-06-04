@@ -21,7 +21,17 @@ namespace Festisfeer.Domain.Services
 
         public List<Review> GetReviewsByFestivalId(int festivalId)
         {
-            return _reviewRepository.GetReviewsByFestivalId(festivalId);
+
+            try
+            {
+                return _reviewRepository.GetReviewsByFestivalId(festivalId);
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
     }
