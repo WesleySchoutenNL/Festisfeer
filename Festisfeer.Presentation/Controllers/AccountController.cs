@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Festisfeer.Domain.Interfaces;
+using Festisfeer.Domain.Services;
 using Festisfeer.Domain.Models;
 using Festisfeer.Presentation.Models;
 using Microsoft.AspNetCore.Http;
@@ -8,21 +8,21 @@ namespace Festisfeer.Presentation.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly IUserRepository _userRepository;  // Gebruik de interface
+        private readonly AccountService _accountService;
 
-        // Constructor maakt gebruik van de interface
-        public AccountController(IUserRepository userRepository)
+        public AccountController(AccountService accountService)
         {
-            _userRepository = userRepository;
+            _accountService = accountService;
         }
 
-        // Register GET
+        // GET: /Account/Register
         [HttpGet]
         public IActionResult Register()
         {
             return View();
         }
 
+        // POST: /Account/Register
         [HttpPost]
         public IActionResult Register(RegisterViewModel model)
         {
@@ -31,14 +31,14 @@ namespace Festisfeer.Presentation.Controllers
                 try
                 {
                     var user = new User(
-                        id: 0, // ID wordt toegekend door de database
+                        id: 0,
                         email: model.Email,
                         password: model.Password,
                         username: model.Username,
-                        role: "Visitor" // standaardrol
+                        role: "Visitor"
                     );
 
-                    _userRepository.RegisterUser(user);
+                    _accountService.RegisterUser(user);
                     return RedirectToAction("Login");
                 }
                 catch (Exception ex)
@@ -50,41 +50,39 @@ namespace Festisfeer.Presentation.Controllers
             return View(model);
         }
 
-        // Login GET
+        // GET: /Account/Login
         [HttpGet]
         public IActionResult Login()
         {
             return View();
         }
 
-        // Login POST
+        // POST: /Account/Login
         [HttpPost]
         public IActionResult Login(LoginViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var user = _userRepository.LoginUser(model.Email, model.Password);  // Log in gebruiker
+                var user = _accountService.Login(model.Email, model.Password);
                 if (user != null)
                 {
-                    // Sla de gebruiker ID, Username en Role op in de sessie
                     HttpContext.Session.SetInt32("UserId", user.Id);
                     HttpContext.Session.SetString("Username", user.Username);
-                    HttpContext.Session.SetString("Role", user.Role);  // Rol wordt nu opgeslagen in de sessie
+                    HttpContext.Session.SetString("Role", user.Role);
 
                     return RedirectToAction("Index", "Home");
                 }
 
-                // Voeg foutmelding toe als inloggen mislukt
                 ModelState.AddModelError(string.Empty, "Ongeldige inloggegevens.");
             }
 
             return View(model);
         }
 
-        // Logout
+        // GET: /Account/Logout
         public IActionResult Logout()
         {
-            HttpContext.Session.Clear();  // Verwijder de sessie
+            HttpContext.Session.Clear();
             return RedirectToAction("Index", "Home");
         }
     }

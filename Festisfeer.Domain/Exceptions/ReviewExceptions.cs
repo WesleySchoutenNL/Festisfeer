@@ -12,5 +12,17 @@ namespace Festisfeer.Domain.Exceptions
         {
             public ReviewRepositoryException(string message, Exception innerException) : base(message, innerException) { }
         }
+
+        public class ReviewServiceException : Exception
+        {
+            public ReviewServiceException(string message, Exception innerException)
+                : base(message, innerException) { }
+        }
+
+        public class InvalidReviewDataException : ArgumentException
+        {
+            public InvalidReviewDataException(string message)
+                : base(message) { }
+        }
     }
 }

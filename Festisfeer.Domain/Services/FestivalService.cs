@@ -49,6 +49,7 @@ namespace Festisfeer.Domain.Services
 
         public void AddFestival(Festival festival)
         {
+            // Validatie 
             if (festival.EndDateTime < festival.StartDateTime)
             {
                 throw new InvalidFestivalDataException("De einddatum mag niet eerder zijn dan de startdatum.");
@@ -69,16 +70,23 @@ namespace Festisfeer.Domain.Services
                 throw new InvalidFestivalDataException("De ticketprijs mag niet negatief zijn.");
             }
 
-            var bestaandFestival = _festivalRepository.GetFestivals()
-                .Any(f => f.Name == festival.Name &&
-                          f.StartDateTime.Date == festival.StartDateTime.Date);
-
-            if (bestaandFestival)
+            try
             {
-                throw new DuplicateFestivalException(); 
-            }
+                var bestaandFestival = _festivalRepository.GetFestivals()
+                    .Any(f => f.Name == festival.Name &&
+                              f.StartDateTime.Date == festival.StartDateTime.Date);
 
-            _festivalRepository.AddFestival(festival);
+                if (bestaandFestival)
+                {
+                    throw new DuplicateFestivalException();
+                }
+
+                _festivalRepository.AddFestival(festival);
+            }
+            catch (FestivalRepositoryException ex)
+            {
+                throw new FestivalServiceException("Fout bij toevoegen van festival via de service.", ex);
+            }
         }
-    }
+    }   
 }

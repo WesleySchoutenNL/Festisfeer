@@ -24,6 +24,7 @@ builder.Services.AddControllersWithViews();
 // Registratie van je repositories via de interfaces
 builder.Services.AddScoped<IFestivalRepository, FestivalRepository>();  // FestivalRepository via de interface IFestivalRepository
 builder.Services.AddScoped<IUserRepository, UserRepository>();  // Hier wordt de interface IUserRepository geregistreerd, niet UserRepository direct
+builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 

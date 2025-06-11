@@ -12,5 +12,17 @@ namespace Festisfeer.Domain.Exceptions
         {
             public CommentRepositoryException(string message, Exception innerException) : base(message, innerException) { }
         }
+
+        public class CommentServiceException : Exception
+        {
+            public CommentServiceException(string message, Exception innerException)
+                : base(message, innerException) { }
+        }
+
+        public class InvalidCommentDataException : ArgumentException
+        {
+            public InvalidCommentDataException(string message)
+                : base(message) { }
+        }
     }
 }

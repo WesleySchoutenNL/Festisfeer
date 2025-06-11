@@ -9,11 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Festisfeer.Domain", "Festis
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Festisfeer.Data", "Festisfeer.Data\Festisfeer.Data.csproj", "{25025A77-7E27-40A2-BB8A-61B63F4AFDC5}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extensions", "Extensions", "{8D0B8FBC-81A6-43CE-B06B-D4347ECD9CCE}"
-	ProjectSection(SolutionItems) = preProject
-		SessionExtensions.cs = SessionExtensions.cs
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Festisfeer.Testlayer", "Testlayer\Festisfeer.Testlayer.csproj", "{6AC44AFC-2E1F-4EDC-BAD5-FF83B0599B21}"
 EndProject
 Global

@@ -4,6 +4,7 @@ using Festisfeer.Domain.Models;
 using System;
 using System.Collections.Generic;
 using static Festisfeer.Domain.Exceptions.CommentExceptions;
+using static Festisfeer.Domain.Exceptions.ReviewExceptions;
 
 namespace Festisfeer.Domain.Services
 {
@@ -18,26 +19,30 @@ namespace Festisfeer.Domain.Services
 
         public List<Comment> GetCommentsByReviewId(int reviewId)
         {
+
             try
             {
                 return _commentRepository.GetCommentsByReviewId(reviewId);
             }
             catch (CommentRepositoryException ex)
             {
-                // Hier kan eventueel logging komen
-                throw new Exception($"Fout bij ophalen van reacties voor review {reviewId}.", ex);
+                throw new CommentServiceException($"Fout bij ophalen van reacties voor review {reviewId}.", ex);
             }
         }
 
         public void AddComment(Comment comment)
         {
+            if (string.IsNullOrWhiteSpace(comment.Content))
+            {
+                throw new InvalidCommentDataException("De comment die je wil invullen is leeg");
+            }
             try
             {
                 _commentRepository.AddComment(comment);
             }
             catch (CommentRepositoryException ex)
             {
-                throw new Exception("Fout bij toevoegen van reactie.", ex);
+                throw new CommentServiceException("Fout bij toevoegen van reactie.", ex);
             }
         }
 
@@ -49,7 +54,7 @@ namespace Festisfeer.Domain.Services
             }
             catch (CommentRepositoryException ex)
             {
-                throw new Exception($"Fout bij ophalen van reactie met ID {commentId}.", ex);
+                throw new CommentServiceException($"Fout bij ophalen van reactie met ID {commentId}.", ex);
             }
         }
 
@@ -61,7 +66,7 @@ namespace Festisfeer.Domain.Services
             }
             catch (CommentRepositoryException ex)
             {
-                throw new Exception($"Fout bij bijwerken van reactie met ID {comment.Id}.", ex);
+                throw new CommentServiceException($"Fout bij bijwerken van reactie met ID {comment.Id}.", ex);
             }
         }
 
@@ -73,7 +78,7 @@ namespace Festisfeer.Domain.Services
             }
             catch (CommentRepositoryException ex)
             {
-                throw new Exception($"Fout bij verwijderen van reactie met ID {commentId}.", ex);
+                throw new CommentServiceException($"Fout bij verwijderen van reactie met ID {commentId}.", ex);
             }
         }
     }

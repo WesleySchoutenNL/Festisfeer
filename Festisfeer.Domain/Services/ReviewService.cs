@@ -1,7 +1,9 @@
-﻿using Festisfeer.Domain.Interfaces;
+﻿using Festisfeer.Domain.Exceptions; // Voeg dit toe voor custom exceptions
+using Festisfeer.Domain.Interfaces;
 using Festisfeer.Domain.Models;
-using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
+using static Festisfeer.Domain.Exceptions.ReviewExceptions;
 
 namespace Festisfeer.Domain.Services
 {
@@ -16,23 +18,37 @@ namespace Festisfeer.Domain.Services
 
         public void AddReview(Review review)
         {
-            _reviewRepository.AddReview(review);
+
+            if  (string.IsNullOrWhiteSpace(review.Content))
+            {
+                throw new InvalidReviewDataException("De review die je wil invullen is leeg");
+            }
+
+            if (review.Rating < 0)
+            {
+                throw new InvalidReviewDataException("De review die je wil invullen is leeg");
+            }
+
+            try
+            {
+                _reviewRepository.AddReview(review);
+            }
+            catch (ReviewRepositoryException ex)
+            {
+                throw new ReviewServiceException("Fout bij toevoegen van review via de service.", ex);
+            }
         }
 
         public List<Review> GetReviewsByFestivalId(int festivalId)
         {
-
             try
             {
                 return _reviewRepository.GetReviewsByFestivalId(festivalId);
-
             }
-            catch (Exception)
+            catch (ReviewRepositoryException ex)
             {
-
-                throw;
+                throw new ReviewServiceException($"Fout bij ophalen van reviews voor festival ID {festivalId}.", ex);
             }
         }
-
     }
 }
