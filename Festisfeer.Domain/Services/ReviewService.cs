@@ -26,7 +26,7 @@ namespace Festisfeer.Domain.Services
 
             if (review.Rating < 0)
             {
-                throw new InvalidReviewDataException("De review die je wil invullen is leeg");
+                throw new InvalidReviewDataException("De rating mag niet negatief zijn.");
             }
 
             try

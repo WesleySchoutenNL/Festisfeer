@@ -9,6 +9,7 @@ using System.Linq;
 using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
 using System.Xml.Linq;
 using Festisfeer.Presentation.InputModels; // Voeg toe voor inputmodel
+using Festisfeer.Domain.Exceptions;
 
 
 namespace Festisfeer.Presentation.Controllers
@@ -151,15 +152,10 @@ namespace Festisfeer.Presentation.Controllers
         public IActionResult EditComment(EditCommentInputModel input)
         {
             var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null) return RedirectToAction("Login", "Account");
+
             var comment = _commentService.GetCommentById(input.CommentId);
-
-            if (comment == null || comment.UserId != userId)
-                return Unauthorized();
-
-            if (string.IsNullOrWhiteSpace(input.Content))
-            {
-                return RedirectToAction("Details", new { id = input.FestivalId, editCommentId = input.CommentId });
-            }
+            if (comment.UserId != userId) return Unauthorized();
 
             comment.UpdateContent(input.Content);
             _commentService.UpdateComment(comment);

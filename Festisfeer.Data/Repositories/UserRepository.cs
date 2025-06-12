@@ -3,6 +3,7 @@ using Festisfeer.Domain.Models;
 using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
 using BCrypt.Net;
+using static Festisfeer.Domain.Exceptions.AccountExceptions;
 
 namespace Festisfeer.Data.Repositories
 {
@@ -15,100 +16,125 @@ namespace Festisfeer.Data.Repositories
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
-        // Methode om te controleren of een gebruiker al bestaat (op basis van email of gebruikersnaam)
         public bool UserExists(string email, string username)
         {
-            using var conn = new MySqlConnection(_connectionString);
-            conn.Open();
+            try
+            {
+                using var conn = new MySqlConnection(_connectionString);
+                conn.Open();
 
-            var query = "SELECT COUNT(*) FROM users WHERE email = @Email OR username = @Username";
-            using var cmd = new MySqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@Email", email);
-            cmd.Parameters.AddWithValue("@Username", username);
+                var query = "SELECT COUNT(*) FROM users WHERE email = @Email OR username = @Username";
+                using var cmd = new MySqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@Email", email);
+                cmd.Parameters.AddWithValue("@Username", username);
 
-            long count = (long)cmd.ExecuteScalar();
-            return count > 0;
+                long count = (long)cmd.ExecuteScalar();
+                return count > 0;
+            }
+            catch (MySqlException ex)
+            {
+                throw new AccountRepositoryException("Fout bij controleren of gebruiker bestaat.", ex);
+            }
         }
 
-        // Methode om een nieuwe gebruiker te registreren
         public void RegisterUser(User user)
         {
-            if (UserExists(user.Email, user.Username))
+            try
             {
-                throw new Exception("Gebruiker met dit e-mailadres of gebruikersnaam bestaat al.");
+                if (UserExists(user.Email, user.Username))
+                {
+                    throw new AccountRepositoryException("Gebruiker met dit e-mailadres of gebruikersnaam bestaat al.");
+                }
+
+                using var conn = new MySqlConnection(_connectionString);
+                conn.Open();
+
+                string hashedPassword = BCrypt.Net.BCrypt.HashPassword(user.Password);
+
+                var query = "INSERT INTO users (email, password, username, role) VALUES (@Email, @Password, @Username, @Role)";
+                using var cmd = new MySqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@Email", user.Email);
+                cmd.Parameters.AddWithValue("@Password", hashedPassword);
+                cmd.Parameters.AddWithValue("@Username", user.Username);
+                cmd.Parameters.AddWithValue("@Role", "Visitor"); // Standaard rol
+                cmd.ExecuteNonQuery();
             }
-
-            using var conn = new MySqlConnection(_connectionString);
-            conn.Open();
-
-            // Het wachtwoord wordt gehasht met BCrypt
-            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(user.Password);
-
-            var query = "INSERT INTO users (email, password, username, role) VALUES (@Email, @Password, @Username, @Role)";
-            using var cmd = new MySqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@Email", user.Email);
-            cmd.Parameters.AddWithValue("@Password", hashedPassword);
-            cmd.Parameters.AddWithValue("@Username", user.Username);
-            cmd.Parameters.AddWithValue("@Role", "Visitor"); // Standaard rol
-            cmd.ExecuteNonQuery();
+            catch (AccountRepositoryException)
+            {
+                throw; // Hergooi repository exception zoals het is
+            }
+            catch (MySqlException ex)
+            {
+                throw new AccountRepositoryException("Fout bij registreren gebruiker in database.", ex);
+            }
         }
 
-        // Methode om een gebruiker in te loggen (controleert of het wachtwoord correct is)
         public User? LoginUser(string email, string password)
         {
-            using var conn = new MySqlConnection(_connectionString);
-            conn.Open();
-
-            var query = "SELECT * FROM users WHERE email = @Email";
-            using var cmd = new MySqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@Email", email);
-
-            using var reader = cmd.ExecuteReader();
-            if (reader.Read())
+            try
             {
-                string hashedPassword = reader.GetString("password");
+                using var conn = new MySqlConnection(_connectionString);
+                conn.Open();
 
-                // Controleer of het opgegeven wachtwoord overeenkomt met het gehashte wachtwoord
-                bool isPasswordValid = BCrypt.Net.BCrypt.Verify(password, hashedPassword);
+                var query = "SELECT * FROM users WHERE email = @Email";
+                using var cmd = new MySqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@Email", email);
 
-                if (isPasswordValid)
+                using var reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    string hashedPassword = reader.GetString("password");
+
+                    bool isPasswordValid = BCrypt.Net.BCrypt.Verify(password, hashedPassword);
+                    if (isPasswordValid)
+                    {
+                        return new User(
+                            reader.GetInt32("id"),
+                            reader.GetString("email"),
+                            hashedPassword,
+                            reader.GetString("username"),
+                            reader.GetString("role")
+                        );
+                    }
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw new AccountRepositoryException("Fout bij inloggen van gebruiker in database.", ex);
+            }
+        }
+
+        public User? GetUserById(int id)
+        {
+            try
+            {
+                using var conn = new MySqlConnection(_connectionString);
+                conn.Open();
+
+                var query = "SELECT * FROM users WHERE id = @Id";
+                using var cmd = new MySqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@Id", id);
+
+                using var reader = cmd.ExecuteReader();
+                if (reader.Read())
                 {
                     return new User(
                         reader.GetInt32("id"),
                         reader.GetString("email"),
-                        hashedPassword,
+                        reader.GetString("password"),
                         reader.GetString("username"),
                         reader.GetString("role")
                     );
                 }
+
+                return null;
             }
-
-            return null;
-        }
-
-        // Methode om een gebruiker op te halen op basis van hun ID
-        public User? GetUserById(int id)
-        {
-            using var conn = new MySqlConnection(_connectionString);
-            conn.Open();
-
-            var query = "SELECT * FROM users WHERE id = @Id";
-            using var cmd = new MySqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@Id", id);
-
-            using var reader = cmd.ExecuteReader();
-            if (reader.Read())
+            catch (Exception ex)
             {
-                return new User(
-                    reader.GetInt32("id"),
-                    reader.GetString("email"),
-                    reader.GetString("password"),
-                    reader.GetString("username"),
-                    reader.GetString("role")
-                );
+                throw new AccountRepositoryException("Fout bij ophalen gebruiker uit database.", ex);
             }
-
-            return null;
         }
     }
 }
