@@ -1,5 +1,10 @@
 ﻿@model Festisfeer.Presentation.InputModels.FestivalInputModel
 
+@{
+    var startValue = Model?.StartDateTime ?? DateTime.Now;
+    var endValue = Model?.EndDateTime ?? DateTime.Now;
+}
+
 <h2 class="text-center mb-4">Voeg een festival toe</h2>
 
 <div class="container">
@@ -30,14 +35,14 @@
         <div class="mb-3">
             <label for="StartDateTime" class="form-label">Startdatum en tijd</label>
             <input type="datetime-local" id="StartDateTime" name="StartDateTime"
-                   value="@(Model?.StartDateTime.ToString("yyyy-MM-ddTHH:mm") ?? DateTime.Now.ToString("yyyy-MM-ddTHH:mm"))"
+                   value="@startValue.ToString("yyyy-MM-ddTHH:mm")"
                    class="form-control" required />
         </div>
 
         <div class="mb-3">
             <label for="EndDateTime" class="form-label">Einddatum en tijd</label>
             <input type="datetime-local" id="EndDateTime" name="EndDateTime"
-                   value="@(Model?.EndDateTime.ToString("yyyy-MM-ddTHH:mm") ?? DateTime.Now.ToString("yyyy-MM-ddTHH:mm"))"
+                   value="@endValue.ToString("yyyy-MM-ddTHH:mm")"
                    class="form-control" required />
         </div>
 
